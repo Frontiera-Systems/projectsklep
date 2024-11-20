@@ -1,10 +1,12 @@
 package com.example.application.views.mainview;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.contextmenu.HasMenuItems;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.html.*;
@@ -181,9 +183,11 @@ public class MainLayout extends AppLayout {
         mainMenu.setOpenOnHover(true);
         mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
 
-        MenuItem firstItem = mainMenu.addItem("Zakladka 1");
+        //MenuItem firstItem = mainMenu.addItem(new Icon(VaadinIcon.AMBULANCE),"Zakladka 1");
+        //firstItem.add(new Text("Zakladka 1"));
+        MenuItem druk3D = createIconItem(mainMenu,VaadinIcon.AMBULANCE,"Druk 3D",null);
 
-        SubMenu firstItemSubMenu = firstItem.getSubMenu();
+        SubMenu firstItemSubMenu = druk3D.getSubMenu();
         MenuItem test = firstItemSubMenu.addItem(podstrona1);
 
         SubMenu testSubMenu = test.getSubMenu();
@@ -193,5 +197,20 @@ public class MainLayout extends AppLayout {
         MenuItem thirdItem = mainMenu.addItem("Zakladka 3");
 
         return mainMenu;
+    }
+
+    private MenuItem createIconItem(HasMenuItems menu, VaadinIcon iconName,
+                                    String label, String ariaLabel) {
+        Icon icon = new Icon(iconName);
+        icon.getStyle().set("width", "var(--lumo-icon-size-m)");
+        icon.getStyle().set("height", "var(--lumo-icon-size-m)");
+        icon.getStyle().set("marginRight", "var(--lumo-space-s)");
+
+        MenuItem item = menu.addItem(icon, e -> {
+        });
+
+            item.add(new Text(" " + label));
+
+        return item;
     }
 }
