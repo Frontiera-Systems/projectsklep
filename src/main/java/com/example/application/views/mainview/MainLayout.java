@@ -11,6 +11,7 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.HasDynamicTitle;
@@ -32,25 +33,16 @@ public class MainLayout extends AppLayout {
 
         // MENU BARS do wsadzenia do jakies klasy
         // MENU BARS ANCHORS
-        Anchor podstrona1 = new Anchor("Podstrona1");
-        podstrona1.setHref("podstrona");
-        podstrona1.setText("Podstrona");
 
-        MenuBar firstmenubar = new MenuBar();
-        MenuItem shareMenuItem = firstmenubar.addItem("Zakladka 1");
-        SubMenu shareSubMenu = shareMenuItem.getSubMenu();
-        MenuItem onSocialMeMenuItem = shareSubMenu.addItem("Podzakladka 1");
-        SubMenu onSocialMeSubMenu = onSocialMeMenuItem.getSubMenu();
-        MenuItem facebookMenuItem = onSocialMeSubMenu.addItem("PodPozakladka 1");
-        MenuItem twitterMenuItem = onSocialMeSubMenu.addItem("PodPodzakladka 2");
-        MenuItem instagramMenuItem = onSocialMeSubMenu.addItem("PodPodzakladka 3");
-        MenuItem byEmailMenuItem = shareSubMenu.addItem(podstrona1);
-        MenuItem getLinkMenuItem = shareSubMenu.addItem("Podzakladka 3");
 
+        Icon logo = new Icon();
+        logo.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
+        logo.setSize("100px");
 
         // Breadcrumb navigation
         HorizontalLayout navbar = new HorizontalLayout();
         VerticalLayout menuBar = new VerticalLayout();
+
         menuBar.add(navbar);
         //navbar.setPadding(true);
         //navbar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Width.MEDIUM); // Ustawienia stylu dla navbaru
@@ -62,9 +54,12 @@ public class MainLayout extends AppLayout {
                 LumoUtility.Padding.End.MEDIUM, LumoUtility.Width.FULL);
         header.getStyle().set("flex-grow", "1");*/
         // Dodanie breadcrumb do navbaru
+        menuBar.add(menuBars());
         menuBar.add(breadcrumb());
+        navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        navbar.add(logo);
         navbar.add(searchBar());
-        navbar.add(firstmenubar);
+        //navbar.add(menuBars());
         navbar.setWidthFull(); // Ustaw navbar na pełną szerokość
         navbar.setSpacing(true); // Dodaj odstępy między elementami
 
@@ -81,6 +76,7 @@ public class MainLayout extends AppLayout {
         ListItem homeItem = new ListItem();
         homeItem.addClassNames(LumoUtility.Display.FLEX);
         Anchor home = new Anchor("/", "Strona Główna");
+        home.getStyle().set("color", "rgba(0, 0, 0, 0.6)");
         homeItem.add(home);
         breadcrumbList.add(homeItem);
 
@@ -102,7 +98,11 @@ public class MainLayout extends AppLayout {
                 // Dodanie Anchor z nazwą segmentu
                 Anchor anchor = new Anchor(currentPath.toString(), capitalize(segment));
                 listItem.add(anchor);
-
+                if(i == segments.length - 1) {
+                    anchor.getStyle().set("color", "red");
+                } else {
+                    anchor.getStyle().set("color", "rgba(0, 0, 0, 0.6)");
+                }
                 breadcrumbList.add(listItem);
             }
         }
@@ -141,9 +141,15 @@ public class MainLayout extends AppLayout {
         ComboBox<String> searchBox = new ComboBox<>();
         Button searchButton = new Button(new Icon(VaadinIcon.SEARCH));
         searchBar.setSpacing(false);
-        searchButton.setAriaLabel("Szukaj");
+
         searchBox.setPlaceholder("Szukaj");
         searchBox.addClassName("no-arrow");
+        searchBox.setWidth("300%");
+        searchBox.getStyle().set("--vaadin-input-field-height","50px");
+
+        searchButton.getStyle().set("--vaadin-button-height","50px");
+        searchButton.setAriaLabel("Szukaj");
+
         searchBar.add(searchBox);
         searchBar.add(searchButton);
         return searchBar;
@@ -155,10 +161,30 @@ public class MainLayout extends AppLayout {
         breadcrumbNav.setAriaLabel("Breadcrumb");
 
         breadcrumbList = new OrderedList();
-        breadcrumbList.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FontSize.SMALL,
-                LumoUtility.ListStyleType.NONE, LumoUtility.Margin.NONE, LumoUtility.Padding.NONE);
-
+        breadcrumbList.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FontSize.XXSMALL,
+                LumoUtility.ListStyleType.NONE, LumoUtility.Margin.NONE, LumoUtility.Padding.NONE, LumoUtility.TextTransform.UPPERCASE);
         breadcrumbNav.add(breadcrumbList);
         return breadcrumbNav;
+    }
+
+    private Component menuBars(){
+        Anchor podstrona1 = new Anchor("Podstrona1");
+        podstrona1.setHref("podstrona");
+        podstrona1.setText("Podstrona");
+
+        MenuBar firstmenubar = new MenuBar();
+        MenuItem shareMenuItem = firstmenubar.addItem("Zakladka 1");
+        SubMenu shareSubMenu = shareMenuItem.getSubMenu();
+        MenuItem onSocialMeMenuItem = shareSubMenu.addItem("Podzakladka 1");
+        SubMenu onSocialMeSubMenu = onSocialMeMenuItem.getSubMenu();
+        MenuItem facebookMenuItem = onSocialMeSubMenu.addItem("PodPozakladka 1");
+        MenuItem twitterMenuItem = onSocialMeSubMenu.addItem("PodPodzakladka 2");
+        MenuItem instagramMenuItem = onSocialMeSubMenu.addItem("PodPodzakladka 3");
+        MenuItem byEmailMenuItem = shareSubMenu.addItem(podstrona1);
+        MenuItem getLinkMenuItem = shareSubMenu.addItem("Podzakladka 3");
+
+        HorizontalLayout menuBars = new HorizontalLayout();
+        menuBars.add(firstmenubar);
+        return menuBars;
     }
 }
