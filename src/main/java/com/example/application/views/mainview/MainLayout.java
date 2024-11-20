@@ -11,6 +11,7 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -170,21 +171,27 @@ public class MainLayout extends AppLayout {
     private Component menuBars(){
         Anchor podstrona1 = new Anchor("Podstrona1");
         podstrona1.setHref("podstrona");
-        podstrona1.setText("Podstrona");
+        podstrona1.setText("Podstrona A");
 
-        MenuBar firstmenubar = new MenuBar();
-        MenuItem shareMenuItem = firstmenubar.addItem("Zakladka 1");
-        SubMenu shareSubMenu = shareMenuItem.getSubMenu();
-        MenuItem onSocialMeMenuItem = shareSubMenu.addItem("Podzakladka 1");
-        SubMenu onSocialMeSubMenu = onSocialMeMenuItem.getSubMenu();
-        MenuItem facebookMenuItem = onSocialMeSubMenu.addItem("PodPozakladka 1");
-        MenuItem twitterMenuItem = onSocialMeSubMenu.addItem("PodPodzakladka 2");
-        MenuItem instagramMenuItem = onSocialMeSubMenu.addItem("PodPodzakladka 3");
-        MenuItem byEmailMenuItem = shareSubMenu.addItem(podstrona1);
-        MenuItem getLinkMenuItem = shareSubMenu.addItem("Podzakladka 3");
+        Anchor podstrona2 = new Anchor("Podstrona2");
+        podstrona2.setHref("podstrona/podstrona2");
+        podstrona2.setText("Podstrona B");
 
-        HorizontalLayout menuBars = new HorizontalLayout();
-        menuBars.add(firstmenubar);
-        return menuBars;
+        MenuBar mainMenu = new MenuBar();
+        mainMenu.setOpenOnHover(true);
+        mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
+
+        MenuItem firstItem = mainMenu.addItem("Zakladka 1");
+
+        SubMenu firstItemSubMenu = firstItem.getSubMenu();
+        MenuItem test = firstItemSubMenu.addItem(podstrona1);
+
+        SubMenu testSubMenu = test.getSubMenu();
+        MenuItem test2 = testSubMenu.addItem(podstrona2);
+
+        MenuItem secondItem = mainMenu.addItem("Zakladka 2");
+        MenuItem thirdItem = mainMenu.addItem("Zakladka 3");
+
+        return mainMenu;
     }
 }
