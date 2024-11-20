@@ -4,6 +4,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.board.Board;
+import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.HasMenuItems;
@@ -23,46 +25,48 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class MainLayout extends AppLayout {
 
-    private H2 viewTitle;
     private Nav breadcrumbNav;
     private OrderedList breadcrumbList;
 
     public MainLayout() {
-        addNavbarContent(); // Dodajemy tylko navbar z breadcrumb
+        addNavbarContent();
     }
 
 
     private void addNavbarContent() {
 
-        // MENU BARS do wsadzenia do jakies klasy
-        // MENU BARS ANCHORS
-
-
         Icon logo = new Icon();
         logo.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
         logo.setSize("100px");
+
+        Icon icon = new Icon();
+        icon.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
+        icon.setSize("100px");
+
+        Board headerBoard = new Board();
+        Row rootRow = new Row();
+        rootRow.add(logo);
+        rootRow.add(searchBar());
+        rootRow.add(icon);
+
+        headerBoard.add(rootRow);
 
         // Breadcrumb navigation
         HorizontalLayout navbar = new HorizontalLayout();
         VerticalLayout menuBar = new VerticalLayout();
 
         menuBar.add(navbar);
-        //navbar.setPadding(true);
-        //navbar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Width.MEDIUM); // Ustawienia stylu dla navbaru
 
-
-        // Tworzymy nagłówek tylko z breadcrumb i tytułem widoku
-        /*var header = new Header(breadcrumbNav);
-        header.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX,
-                LumoUtility.Padding.End.MEDIUM, LumoUtility.Width.FULL);
-        header.getStyle().set("flex-grow", "1");*/
-        // Dodanie breadcrumb do navbaru
         menuBar.add(menuBars());
         menuBar.add(breadcrumb());
-        navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-        navbar.add(logo);
-        navbar.add(searchBar());
-        //navbar.add(menuBars());
+        navbar.add(headerBoard);
+        navbar.setPadding(true);
+
+        menuBar.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        navbar.setAlignItems(FlexComponent.Alignment.STRETCH);
+        navbar.setAlignItems(FlexComponent.Alignment.CENTER);
+
         navbar.setWidthFull(); // Ustaw navbar na pełną szerokość
         navbar.setSpacing(true); // Dodaj odstępy między elementami
 
@@ -186,15 +190,13 @@ public class MainLayout extends AppLayout {
         MenuItem druk3D = createIconItem(mainMenu,VaadinIcon.AMBULANCE,"Druk 3D",null);
         MenuItem elektronika = createIconItem(mainMenu,VaadinIcon.BED,"Elektronika",null);
         MenuItem smartHome = createIconItem(mainMenu,VaadinIcon.HOME,"SmartHome",null);
-        
+
         SubMenu firstItemSubMenu = druk3D.getSubMenu();
         MenuItem test = firstItemSubMenu.addItem(podstrona1);
 
         SubMenu testSubMenu = test.getSubMenu();
         MenuItem test2 = testSubMenu.addItem(podstrona2);
 
-        //MenuItem secondItem = mainMenu.addItem("Zakladka 2");
-        //MenuItem thirdItem = mainMenu.addItem("Zakladka 3");
 
         return mainMenu;
     }
