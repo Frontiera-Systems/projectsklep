@@ -183,18 +183,18 @@ public class MainLayout extends AppLayout {
         mainMenu.setOpenOnHover(true);
         mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
 
-        //MenuItem firstItem = mainMenu.addItem(new Icon(VaadinIcon.AMBULANCE),"Zakladka 1");
-        //firstItem.add(new Text("Zakladka 1"));
         MenuItem druk3D = createIconItem(mainMenu,VaadinIcon.AMBULANCE,"Druk 3D",null);
-
+        MenuItem elektronika = createIconItem(mainMenu,VaadinIcon.BED,"Elektronika",null);
+        MenuItem smartHome = createIconItem(mainMenu,VaadinIcon.HOME,"SmartHome",null);
+        
         SubMenu firstItemSubMenu = druk3D.getSubMenu();
         MenuItem test = firstItemSubMenu.addItem(podstrona1);
 
         SubMenu testSubMenu = test.getSubMenu();
         MenuItem test2 = testSubMenu.addItem(podstrona2);
 
-        MenuItem secondItem = mainMenu.addItem("Zakladka 2");
-        MenuItem thirdItem = mainMenu.addItem("Zakladka 3");
+        //MenuItem secondItem = mainMenu.addItem("Zakladka 2");
+        //MenuItem thirdItem = mainMenu.addItem("Zakladka 3");
 
         return mainMenu;
     }
