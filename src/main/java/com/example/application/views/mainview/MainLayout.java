@@ -42,13 +42,18 @@ public class MainLayout extends AppLayout {
         Icon icon = new Icon();
         icon.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
         icon.setSize("100px");
+        Div spacer = new Div();
+
+        Anchor loginLink = iconAnchor("ZALOGUJ","/podstrona", VaadinIcon.USER);
+        Anchor loginLink2 = iconAnchor("ZALOGUJ","/podstrona/podstrona2", VaadinIcon.USER);
 
         Board headerBoard = new Board();
         Row rootRow = new Row();
+        Row userRow = new Row(spacer,loginLink,loginLink2);
         rootRow.add(logo);
         rootRow.add(searchBar());
-        rootRow.add(icon);
-
+        rootRow.addNestedRow(userRow);
+     
         headerBoard.add(rootRow);
 
         // Breadcrumb navigation
@@ -214,5 +219,18 @@ public class MainLayout extends AppLayout {
             item.add(new Text(" " + label));
 
         return item;
+    }
+
+    private Anchor iconAnchor(String text, String url, VaadinIcon iconName){
+        Icon icon = new Icon(iconName);
+        Span tekst = new Span(text);
+        tekst.getElement().getStyle().set("font-size","20px");
+        Anchor anchor = new Anchor(url, "");
+        anchor.add(icon, tekst);
+        anchor.getStyle().set("display", "flex") // Flexbox dla wyrównania
+                .set("align-items", "center") // Wyrównanie do środka w pionie
+                .set("gap", "15px"); // Odstęp między ikoną a tekstem
+
+        return anchor;
     }
 }
