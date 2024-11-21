@@ -4,8 +4,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.board.Board;
-import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.HasMenuItems;
@@ -39,41 +37,54 @@ public class MainLayout extends AppLayout {
         logo.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
         logo.setSize("100px");
 
-        Icon icon = new Icon();
-        icon.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
-        icon.setSize("100px");
         Div spacer = new Div();
+        spacer.getStyle().set("flex-grow", "1"); // Standardowy spacer
+        spacer.setWidth("30%"); // Sprawia, że spacer zajmuje dostępne miejsce
+
 
         Anchor loginLink = iconAnchor("ZALOGUJ","/podstrona", VaadinIcon.USER);
         Anchor loginLink2 = iconAnchor("ZALOGUJ","/podstrona/podstrona2", VaadinIcon.USER);
+        Anchor loginLink3 = iconAnchor("ZALOGUJ","/podstrona", VaadinIcon.USER);
+        Anchor loginLink4 = iconAnchor("ZALOGUJ","/podstrona/podstrona2", VaadinIcon.USER);
 
-        Board headerBoard = new Board();
-        Row rootRow = new Row();
-        Row userRow = new Row(spacer,loginLink,loginLink2);
-        rootRow.add(logo);
-        rootRow.add(searchBar());
-        rootRow.addNestedRow(userRow);
-     
-        headerBoard.add(rootRow);
+        Div userInterfaceLeft = new Div();
+        userInterfaceLeft.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Padding.Horizontal.XLARGE, LumoUtility.Gap.XLARGE);
+        userInterfaceLeft.add(loginLink);
+        userInterfaceLeft.add(loginLink2);
 
-        // Breadcrumb navigation
+
+        Div userInterfaceRight = new Div();
+        userInterfaceRight.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Padding.Horizontal.XLARGE, LumoUtility.Gap.XLARGE);
+        userInterfaceRight.add(loginLink3);
+        userInterfaceRight.add(loginLink4);
+
+        Div userInterfaceRoot = new Div();
+        userInterfaceRoot.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        userInterfaceRoot.add(userInterfaceLeft);
+        userInterfaceRoot.add(userInterfaceRight);
+
+        /*Div MainUserInterface = new Div();
+
+        MainUserInterface.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Gap.XSMALL, LumoUtility.Padding.Vertical.NONE);
+        MainUserInterface.add(logo);
+        MainUserInterface.add(searchBar());
+        MainUserInterface.add(userInterfaceRoot);
+*/
+
         HorizontalLayout navbar = new HorizontalLayout();
+        navbar.setWidth("60%");
+        navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        navbar.add(logo,searchBar(),userInterfaceRoot);
+        navbar.expand(searchBar());
+        navbar.addClassNames(LumoUtility.Padding.Vertical.NONE);
+
         VerticalLayout menuBar = new VerticalLayout();
 
-        menuBar.add(navbar);
 
-        menuBar.add(menuBars());
-        menuBar.add(breadcrumb());
-        navbar.add(headerBoard);
-        navbar.setPadding(true);
-
+        menuBar.add(navbar,menuBars(),breadcrumb());
+        //menuBar.add(menuBars());
+        //menuBar.add(breadcrumb());
         menuBar.setAlignItems(FlexComponent.Alignment.CENTER);
-
-        navbar.setAlignItems(FlexComponent.Alignment.STRETCH);
-        navbar.setAlignItems(FlexComponent.Alignment.CENTER);
-
-        navbar.setWidthFull(); // Ustaw navbar na pełną szerokość
-        navbar.setSpacing(true); // Dodaj odstępy między elementami
 
         addToNavbar(menuBar);
     }
@@ -164,6 +175,7 @@ public class MainLayout extends AppLayout {
 
         searchBar.add(searchBox);
         searchBar.add(searchButton);
+searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.Vertical.XSMALL);
         return searchBar;
     }
 
@@ -226,11 +238,8 @@ public class MainLayout extends AppLayout {
         Span tekst = new Span(text);
         tekst.getElement().getStyle().set("font-size","20px");
         Anchor anchor = new Anchor(url, "");
+        anchor.addClassName("custom-link");
         anchor.add(icon, tekst);
-        anchor.getStyle().set("display", "flex") // Flexbox dla wyrównania
-                .set("align-items", "center") // Wyrównanie do środka w pionie
-                .set("gap", "15px"); // Odstęp między ikoną a tekstem
-
         return anchor;
     }
 }
