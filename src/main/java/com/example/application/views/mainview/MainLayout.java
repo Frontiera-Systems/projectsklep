@@ -37,11 +37,6 @@ public class MainLayout extends AppLayout {
         logo.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
         logo.setSize("100px");
 
-        Div spacer = new Div();
-        spacer.getStyle().set("flex-grow", "1"); // Standardowy spacer
-        spacer.setWidth("30%"); // Sprawia, że spacer zajmuje dostępne miejsce
-
-
         Anchor loginLink = iconAnchor("ZALOGUJ","/podstrona", VaadinIcon.USER);
         Anchor loginLink2 = iconAnchor("ZALOGUJ","/podstrona/podstrona2", VaadinIcon.USER);
         Anchor loginLink3 = iconAnchor("ZALOGUJ","/podstrona", VaadinIcon.USER);
@@ -63,27 +58,16 @@ public class MainLayout extends AppLayout {
         userInterfaceRoot.add(userInterfaceLeft);
         userInterfaceRoot.add(userInterfaceRight);
 
-        /*Div MainUserInterface = new Div();
-
-        MainUserInterface.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Gap.XSMALL, LumoUtility.Padding.Vertical.NONE);
-        MainUserInterface.add(logo);
-        MainUserInterface.add(searchBar());
-        MainUserInterface.add(userInterfaceRoot);
-*/
-
         HorizontalLayout navbar = new HorizontalLayout();
-        navbar.setWidth("60%");
+        navbar.setWidth("80%");
+        navbar.setAlignItems(FlexComponent.Alignment.CENTER);
         navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         navbar.add(logo,searchBar(),userInterfaceRoot);
-        navbar.expand(searchBar());
+        navbar.setFlexGrow(1,searchBar());
         navbar.addClassNames(LumoUtility.Padding.Vertical.NONE);
 
         VerticalLayout menuBar = new VerticalLayout();
-
-
         menuBar.add(navbar,menuBars(),breadcrumb());
-        //menuBar.add(menuBars());
-        //menuBar.add(breadcrumb());
         menuBar.setAlignItems(FlexComponent.Alignment.CENTER);
 
         addToNavbar(menuBar);
@@ -161,6 +145,7 @@ public class MainLayout extends AppLayout {
 
     private Component searchBar() {
         HorizontalLayout searchBar = new HorizontalLayout();
+        searchBar.setWidth("30%");
         ComboBox<String> searchBox = new ComboBox<>();
         Button searchButton = new Button(new Icon(VaadinIcon.SEARCH));
         searchBar.setSpacing(false);
