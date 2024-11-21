@@ -38,9 +38,9 @@ public class MainLayout extends AppLayout {
         logo.setSize("100px");
 
         Anchor loginLink = iconAnchor("ZALOGUJ","/podstrona", VaadinIcon.USER);
-        Anchor loginLink2 = iconAnchor("ZALOGUJ","/podstrona/podstrona2", VaadinIcon.USER);
-        Anchor loginLink3 = iconAnchor("ZALOGUJ","/podstrona", VaadinIcon.USER);
-        Anchor loginLink4 = iconAnchor("ZALOGUJ","/podstrona/podstrona2", VaadinIcon.USER);
+        Anchor loginLink2 = iconAnchor("KOSZYK","/podstrona/podstrona2", VaadinIcon.CART);
+        Anchor loginLink3 = iconAnchor("SCHOWEK","/podstrona", VaadinIcon.BARCODE);
+        Anchor loginLink4 = iconAnchor("KONTAKT","/podstrona/podstrona2", VaadinIcon.CHAT);
 
         Div userInterfaceLeft = new Div();
         userInterfaceLeft.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Padding.Horizontal.XLARGE, LumoUtility.Gap.XLARGE);
@@ -223,7 +223,7 @@ searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyConten
         Span tekst = new Span(text);
         tekst.getElement().getStyle().set("font-size","20px");
         Anchor anchor = new Anchor(url, "");
-        anchor.addClassName("custom-link");
+        anchor.addClassName("icon_link");
         anchor.add(icon, tekst);
         return anchor;
     }

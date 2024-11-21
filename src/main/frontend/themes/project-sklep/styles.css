@@ -29,3 +29,10 @@ html {
       --lumo-success-text-color: hsl(159, 61%, 40%);
       --lumo-font-family: 'Arial';
 }
+
+.icon_link {
+    display: flex; /* Ustawienie kontenera jako flex */
+    align-items: center; /* Wyrównanie w pionie */
+    justify-content: center; /* Wyrównanie w poziomie */
+    gap: 5px; /* Opcjonalnie, dodaje odstęp między ikoną a tekstem */
+}
