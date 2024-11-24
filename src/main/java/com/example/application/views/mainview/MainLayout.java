@@ -12,6 +12,7 @@ import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -37,14 +38,36 @@ public class MainLayout extends AppLayout {
         logo.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
         logo.setSize("100px");
 
+
+
+
+
+        LoginOverlay loginOverlay = new LoginOverlay();
+        Button loginButton = new Button("ZALOGUJ", new Icon(VaadinIcon.USER));
+
+        Header loginHeader = new Header();
+        loginHeader.setText("ZALOGUJ SIE");
+        Button closeLogin = new Button(new Icon(VaadinIcon.CLOSE));
+        closeLogin.addClickListener(listener -> loginOverlay.setOpened(false));
+
+        VerticalLayout loginHeaderLayout = new VerticalLayout(closeLogin,loginHeader);
+        loginHeaderLayout.setAlignSelf(FlexComponent.Alignment.END,closeLogin);
+        loginHeaderLayout.setAlignSelf(FlexComponent.Alignment.CENTER,loginHeader);
+
+        loginButton.addClickListener(event -> loginOverlay.setOpened(true));
+        loginOverlay.addLoginListener(listener -> loginOverlay.close());
+        loginOverlay.setTitle(loginHeaderLayout);
+        loginOverlay.setDescription("lub zarejestruj :>");
+
         Anchor loginLink = iconAnchor("ZALOGUJ","/p3", VaadinIcon.USER);
         Anchor loginLink2 = iconAnchor("KOSZYK","/podstrona/podstrona2", VaadinIcon.CART);
         Anchor loginLink3 = iconAnchor("SCHOWEK","/podstrona", VaadinIcon.BARCODE);
         Anchor loginLink4 = iconAnchor("KONTAKT","/podstrona/podstrona2", VaadinIcon.CHAT);
 
+
         Div userInterfaceLeft = new Div();
         userInterfaceLeft.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Padding.Horizontal.XLARGE, LumoUtility.Gap.XLARGE);
-        userInterfaceLeft.add(loginLink);
+        userInterfaceLeft.add(loginButton);
         userInterfaceLeft.add(loginLink2);
 
 
@@ -227,4 +250,5 @@ searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyConten
         anchor.add(icon, tekst);
         return anchor;
     }
+
 }

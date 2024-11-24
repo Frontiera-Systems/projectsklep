@@ -11,9 +11,6 @@ public class PodstronaPierwsza extends VerticalLayout {
 
     public PodstronaPierwsza() {
 
-
-
-
 }
 
 }
