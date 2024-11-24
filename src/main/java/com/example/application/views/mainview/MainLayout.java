@@ -37,7 +37,7 @@ public class MainLayout extends AppLayout {
         logo.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
         logo.setSize("100px");
 
-        Anchor loginLink = iconAnchor("ZALOGUJ","/podstrona", VaadinIcon.USER);
+        Anchor loginLink = iconAnchor("ZALOGUJ","/p3", VaadinIcon.USER);
         Anchor loginLink2 = iconAnchor("KOSZYK","/podstrona/podstrona2", VaadinIcon.CART);
         Anchor loginLink3 = iconAnchor("SCHOWEK","/podstrona", VaadinIcon.BARCODE);
         Anchor loginLink4 = iconAnchor("KONTAKT","/podstrona/podstrona2", VaadinIcon.CHAT);
