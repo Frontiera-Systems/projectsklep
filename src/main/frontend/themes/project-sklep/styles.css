@@ -36,3 +36,10 @@ html {
     justify-content: center; /* Wyrównanie w poziomie */
     gap: 5px; /* Opcjonalnie, dodaje odstęp między ikoną a tekstem */
 }
+
+login-form::part(form-title) {
+      text-align: center; /* Wyśrodkowanie tekstu */
+      font-size: 24px;    /* Zwiększenie rozmiaru czcionki */
+      font-weight: bold;  /* Pogrubienie */
+      color: #0077cc;     /* Zmiana koloru tekstu */
+}
