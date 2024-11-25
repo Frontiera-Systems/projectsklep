@@ -44,7 +44,7 @@ public class MainLayout extends AppLayout {
 
 
         Anchor loginLink = iconAnchor("ZALOGUJ","/login", VaadinIcon.USER);
-        Anchor loginLink2 = iconAnchor("KOSZYK","/podstrona/podstrona2", VaadinIcon.CART);
+        Anchor loginLink2 = iconAnchor("KOSZYK","/podstrona", VaadinIcon.CART);
         Anchor loginLink3 = iconAnchor("SCHOWEK","/p3", VaadinIcon.BARCODE);
         Anchor loginLink4 = iconAnchor("KONTAKT","/podstrona/podstrona2", VaadinIcon.CHAT);
 
