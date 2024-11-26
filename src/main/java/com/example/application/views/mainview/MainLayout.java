@@ -38,9 +38,9 @@ public class MainLayout extends AppLayout {
         Anchor userNotLogged = iconAnchor("KONTO","/login", VaadinIcon.USER);
         Component user;
         if (securityService.getAuthenticatedUser() != null) {
-            user = loggedUserMenu();
+            user = loggedUserMenu(true);
         } else {
-            user = new Button(userNotLogged);
+            user = loggedUserMenu(false);
         }
 
         addNavbarContent(user);
@@ -259,15 +259,22 @@ searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyConten
     }
 */
 
-    private MenuBar loggedUserMenu(){
+    private MenuBar loggedUserMenu(boolean logged){
         MenuBar mainMenu = new MenuBar();
         mainMenu.setOpenOnHover(true);
         mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
+        MenuItem userAll = createIconItem(mainMenu, VaadinIcon.USER, "KONTO", null);
 
-        MenuItem userAll = createIconItem(mainMenu,VaadinIcon.USER,"KONTO",null);
-        SubMenu logout = userAll.getSubMenu();
-        MenuItem logoutSub = logout.addItem("Wyloguj sie");
-        logoutSub.addClickListener(click -> securityService.logout());
-        return  mainMenu;
+
+        if (logged) {
+            userAll.addClickListener(click2 -> UI.getCurrent().navigate("/p3"));
+            SubMenu logout = userAll.getSubMenu();
+            MenuItem logoutSub = logout.addItem("Wyloguj sie");
+            logoutSub.addClickListener(click -> securityService.logout());
+        } else {
+            userAll.addClickListener(click2 -> UI.getCurrent().navigate("/login"));
+        }
+
+        return mainMenu;
     }
 }
