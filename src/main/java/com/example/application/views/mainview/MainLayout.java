@@ -195,28 +195,24 @@ searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyConten
     }
 
     private Component menuBars(){
-        Anchor podstrona1 = new Anchor("Podstrona1");
-        podstrona1.setHref("podstrona");
-        podstrona1.setText("Podstrona A");
-
-        Anchor podstrona2 = new Anchor("Podstrona2");
-        podstrona2.setHref("podstrona/podstrona2");
-        podstrona2.setText("Podstrona B");
-
         MenuBar mainMenu = new MenuBar();
         mainMenu.setOpenOnHover(true);
         mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
 
-        MenuItem druk3D = createIconItem(mainMenu,VaadinIcon.AMBULANCE,"Druk 3D",null);
+
         MenuItem elektronika = createIconItem(mainMenu,VaadinIcon.BED,"Elektronika",null);
         MenuItem smartHome = createIconItem(mainMenu,VaadinIcon.HOME,"SmartHome",null);
 
+        MenuItem druk3D = createIconItem(mainMenu,VaadinIcon.AMBULANCE,"Druk 3D",null);
+        
         SubMenu firstItemSubMenu = druk3D.getSubMenu();
-        MenuItem test = firstItemSubMenu.addItem(podstrona1);
+        MenuItem test = firstItemSubMenu.addItem("Podstrona 1");
+        test.addClickListener(click -> UI.getCurrent().navigate("/p3"));
+
 
         SubMenu testSubMenu = test.getSubMenu();
-        MenuItem test2 = testSubMenu.addItem(podstrona2);
-
+        MenuItem test2 = testSubMenu.addItem("Podstrona 2");
+        test2.addClickListener(click -> UI.getCurrent().navigate("/p3"));
 
         return mainMenu;
     }
@@ -246,19 +242,6 @@ searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyConten
         return anchor;
     }
 
-    /*private Button accountButton(){
-        Anchor userLogged = iconAnchor("KONTO","/p3",VaadinIcon.USER);
-        Anchor userNotLogged = iconAnchor("KONTO","/login", VaadinIcon.USER);
-        Button user;
-        if (securityService.getAuthenticatedUser() != null) {
-            user = new Button(userLogged);
-        } else {
-            user = new Button(userNotLogged);
-        }
-        return user;
-    }
-*/
-
     private MenuBar loggedUserMenu(boolean logged){
         MenuBar mainMenu = new MenuBar();
         mainMenu.setOpenOnHover(true);
@@ -269,8 +252,10 @@ searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyConten
         if (logged) {
             userAll.addClickListener(click2 -> UI.getCurrent().navigate("/p3"));
             SubMenu logout = userAll.getSubMenu();
-            MenuItem logoutSub = logout.addItem("Wyloguj sie");
-            logoutSub.addClickListener(click -> securityService.logout());
+            logout.addItem("Zamowienia");
+            logout.addItem("Dane");
+            logout.addItem("Ulubione");
+            logout.addItem("Wyloguj sie").addClickListener(click -> securityService.logout());
         } else {
             userAll.addClickListener(click2 -> UI.getCurrent().navigate("/login"));
         }
