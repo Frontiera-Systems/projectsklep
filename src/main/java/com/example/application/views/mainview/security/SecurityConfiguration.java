@@ -20,8 +20,8 @@ public class SecurityConfiguration extends VaadinWebSecurity {
     protected void configure(HttpSecurity http) throws Exception {
         // http.rememberMe().alwaysRemember(false);
         // super.configure(HttpSecurity) as it adds final anyRequest matcher
-        http.authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/public/**"))
-                .permitAll());
+
+        http.authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/public/**")).permitAll());
 
         super.configure(http);
 
@@ -34,7 +34,7 @@ public class SecurityConfiguration extends VaadinWebSecurity {
         super.configure(web);
     }
 
-    
+
 
     @Bean
     public UserDetailsManager userDetailsService() {
