@@ -1,6 +1,6 @@
-package com.example.application.views.mainview;
+package com.example.application.views.controllers;
 
-import com.example.application.views.mainview.security.SecurityService;
+import com.example.application.security.SecurityService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;

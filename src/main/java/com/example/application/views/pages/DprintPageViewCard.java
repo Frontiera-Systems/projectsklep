@@ -1,4 +1,4 @@
-package com.example.application.views.mainview.mainpage;
+package com.example.application.views.pages;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;

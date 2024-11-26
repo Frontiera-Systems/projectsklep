@@ -1,6 +1,7 @@
-package com.example.application.views.mainview.security;
+package com.example.application.security;
 
-import com.example.application.views.mainview.MainLayout;
+import com.example.application.Application;
+import com.example.application.views.controllers.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.login.LoginForm;
@@ -11,6 +12,8 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Route(value = "login", layout = MainLayout.class)
 @PageTitle("Login")
@@ -50,6 +53,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         add(new H1("ZALOGUJ SIĘ"),login,registerLink);
     }
 
+    private static final Logger log = LoggerFactory.getLogger(Application.class);
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {

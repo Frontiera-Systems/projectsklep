@@ -1,5 +1,6 @@
-package com.example.application.views.mainview.security;
+package com.example.application.security;
 
+import com.example.application.service.UserService;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,10 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -26,7 +25,7 @@ public class SecurityConfiguration extends VaadinWebSecurity {
         http.authorizeHttpRequests((authz) -> authz
                 .requestMatchers(
                         new AntPathRequestMatcher("/h2-console/**")
-                ).hasRole("ADMIN")
+                ).permitAll()
         );
 
         http.csrf((csrf) ->
@@ -47,27 +46,21 @@ public class SecurityConfiguration extends VaadinWebSecurity {
 
     }
 
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         // Customize your WebSecurity configuration.
         super.configure(web);
     }
 
-
-
     @Bean
-    public UserDetailsManager userDetailsService() {
-        UserDetails user =
-                User.withUsername("user")
-                        .password("{noop}user")
-                        .roles("USER")
-                        .build();
-        UserDetails admin =
-                User.withUsername("admin")
-                        .password("{noop}admin")
-                        .roles("ADMIN")
-                        .build();
-        return new InMemoryUserDetailsManager(user, admin);
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    private final UserService userService;
+
+    public SecurityConfiguration(UserService userService) {
+        this.userService = userService;
+    }
     }
 
-}
