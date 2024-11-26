@@ -29,13 +29,11 @@ public class MainLayout extends AppLayout {
 
     private Nav breadcrumbNav;
     private OrderedList breadcrumbList;
-   private SecurityService securityService;
+    private SecurityService securityService;
 
     public MainLayout(@Autowired SecurityService securityService) {
         this.securityService = securityService;
 
-        Anchor userLogged = iconAnchor("KONTO","/p3",VaadinIcon.USER);
-        Anchor userNotLogged = iconAnchor("KONTO","/login", VaadinIcon.USER);
         Component user;
         if (securityService.getAuthenticatedUser() != null) {
             user = loggedUserMenu(true);
@@ -178,7 +176,7 @@ public class MainLayout extends AppLayout {
 
         searchBar.add(searchBox);
         searchBar.add(searchButton);
-searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.Vertical.XSMALL);
+        searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.Vertical.XSMALL);
         return searchBar;
     }
 
@@ -204,7 +202,7 @@ searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyConten
         MenuItem smartHome = createIconItem(mainMenu,VaadinIcon.HOME,"SmartHome",null);
 
         MenuItem druk3D = createIconItem(mainMenu,VaadinIcon.AMBULANCE,"Druk 3D",null);
-        
+
         SubMenu firstItemSubMenu = druk3D.getSubMenu();
         MenuItem test = firstItemSubMenu.addItem("Podstrona 1");
         test.addClickListener(click -> UI.getCurrent().navigate("/p3"));
