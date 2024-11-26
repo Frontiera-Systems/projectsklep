@@ -10,32 +10,11 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration extends VaadinWebSecurity {
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // Wyłączenie CSRF dla H2 Console
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").hasRole("ADMIN") // Dostęp tylko dla ADMIN
-                        .anyRequest().authenticated() // Wszystkie inne żądania wymagają uwierzytelnienia
-                )
-                .headers(headers -> headers
-                        .frameOptions(frameOptions -> frameOptions
-                                .sameOrigin() // Pozwolenie na używanie ramek z tej samej domeny
-                        )
-                )
-                .formLogin(withDefaults()); // Opcjonalnie: włączenie formularza logowania
-
-        return http.build();
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -88,4 +67,5 @@ public class SecurityConfiguration extends VaadinWebSecurity {
                         .build();
         return new InMemoryUserDetailsManager(user, admin);
     }
+
 }

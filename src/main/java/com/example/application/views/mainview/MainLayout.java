@@ -1,5 +1,6 @@
 package com.example.application.views.mainview;
 
+import com.example.application.views.mainview.security.SecurityService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -19,40 +20,49 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.springframework.beans.factory.annotation.Autowired;
 
+@AnonymousAllowed
 public class MainLayout extends AppLayout {
 
     private Nav breadcrumbNav;
     private OrderedList breadcrumbList;
+   private SecurityService securityService;
 
-    public MainLayout() {
-        addNavbarContent();
+    public MainLayout(@Autowired SecurityService securityService) {
+        this.securityService = securityService;
+
+        Anchor userLogged = iconAnchor("KONTO","/p3",VaadinIcon.USER);
+        Anchor userNotLogged = iconAnchor("KONTO","/login", VaadinIcon.USER);
+        Component user;
+        if (securityService.getAuthenticatedUser() != null) {
+            user = loggedUserMenu();
+        } else {
+            user = new Button(userNotLogged);
+        }
+
+        addNavbarContent(user);
     }
 
 
-    private void addNavbarContent() {
+    private void addNavbarContent(Component userButton) {
 
         Icon logo = new Icon();
         logo.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
         logo.setSize("100px");
-
-
-
-
-
-
 
         Anchor loginLink = iconAnchor("ZALOGUJ","/login", VaadinIcon.USER);
         Anchor loginLink2 = iconAnchor("KOSZYK","/podstrona", VaadinIcon.CART);
         Anchor loginLink3 = iconAnchor("SCHOWEK","/p3", VaadinIcon.BARCODE);
         Anchor loginLink4 = iconAnchor("KONTAKT","/podstrona/podstrona2", VaadinIcon.CHAT);
 
-        Button loginButton = new Button(loginLink);
+        //Button loginButton = accountButton();
 
         Div userInterfaceLeft = new Div();
         userInterfaceLeft.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Padding.Horizontal.XLARGE, LumoUtility.Gap.XLARGE);
-        userInterfaceLeft.add(loginButton);
+        userInterfaceLeft.add(userButton);
         userInterfaceLeft.add(loginLink2);
 
 
@@ -236,4 +246,28 @@ searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyConten
         return anchor;
     }
 
+    /*private Button accountButton(){
+        Anchor userLogged = iconAnchor("KONTO","/p3",VaadinIcon.USER);
+        Anchor userNotLogged = iconAnchor("KONTO","/login", VaadinIcon.USER);
+        Button user;
+        if (securityService.getAuthenticatedUser() != null) {
+            user = new Button(userLogged);
+        } else {
+            user = new Button(userNotLogged);
+        }
+        return user;
+    }
+*/
+
+    private MenuBar loggedUserMenu(){
+        MenuBar mainMenu = new MenuBar();
+        mainMenu.setOpenOnHover(true);
+        mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
+
+        MenuItem userAll = createIconItem(mainMenu,VaadinIcon.USER,"KONTO",null);
+        SubMenu logout = userAll.getSubMenu();
+        MenuItem logoutSub = logout.addItem("Wyloguj sie");
+        logoutSub.addClickListener(click -> securityService.logout());
+        return  mainMenu;
+    }
 }

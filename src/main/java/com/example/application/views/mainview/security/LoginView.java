@@ -23,7 +23,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     LoginI18n.Form i18nForm = i18n.getForm();
 
     public LoginView() {
-
         setSizeFull();
 
         setJustifyContentMode(JustifyContentMode.CENTER);
@@ -50,6 +49,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         add(new H1("ZALOGUJ SIĘ"),login,registerLink);
     }
+
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
