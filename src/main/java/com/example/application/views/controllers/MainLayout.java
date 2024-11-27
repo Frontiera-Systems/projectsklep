@@ -205,7 +205,7 @@ public class MainLayout extends AppLayout {
 
         SubMenu firstItemSubMenu = druk3D.getSubMenu();
         MenuItem test = firstItemSubMenu.addItem("Podstrona 1");
-        test.addClickListener(click -> UI.getCurrent().navigate("/p3"));
+        test.addClickListener(click -> UI.getCurrent().navigate("/reg"));
 
 
         SubMenu testSubMenu = test.getSubMenu();
@@ -248,7 +248,7 @@ public class MainLayout extends AppLayout {
 
 
         if (logged) {
-            userAll.addClickListener(click2 -> UI.getCurrent().navigate("/p3"));
+            userAll.addClickListener(click2 -> UI.getCurrent().navigate("/reg"));
             SubMenu logout = userAll.getSubMenu();
             logout.addItem("Zamowienia");
             logout.addItem("Dane");

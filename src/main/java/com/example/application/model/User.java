@@ -19,10 +19,14 @@ public class User implements UserDetails {
     Integer id;
 
     @Column(name = "username")
-    String username;
+    private String username;
 
     @Column(name = "password")
-    String password;
+    private String password;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<UserRole> userRoles; // Używamy UserRole, a nie Role bezpośrednio
+
 
     public Integer getId() {
         return id;
@@ -63,8 +67,8 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        for(Role role: roleList) {
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getName());
+        for (UserRole userRole : userRoles) {
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole.getRole().getName());
             authorityList.add(authority);
         }
         return authorityList;
@@ -77,7 +81,9 @@ public class User implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
     }
+}
 
+/*
     public List<Role> getRoleList() {
         return roleList;
     }
@@ -91,3 +97,4 @@ public class User implements UserDetails {
 
 
 }
+*/

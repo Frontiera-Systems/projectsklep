@@ -45,9 +45,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         i18nErrorMessage.setMessage("Sprawdź czy email oraz hasło są poprawne natępnie spróbuj ponownie.");
         i18n.setErrorMessage(i18nErrorMessage);
 
-        Html registerLink = new Html("<a href='p3' style='color: var(--lumo-primary-color); text-decoration: none;'>Nie masz konta? Zarejestruj się tutaj</a>");
+        Html registerLink = new Html("<a href='reg' style='color: var(--lumo-primary-color); text-decoration: none;'>Nie masz konta? Zarejestruj się tutaj</a>");
 
         login.setAction("login");
+
         login.setI18n(i18n);
 
         add(new H1("ZALOGUJ SIĘ"),login,registerLink);

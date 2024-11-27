@@ -1,6 +1,5 @@
 package com.example.application.security;
 
-import com.example.application.service.UserService;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,10 +56,10 @@ public class SecurityConfiguration extends VaadinWebSecurity {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    private final UserService userService;
+   /* private final UserService userService;
 
     public SecurityConfiguration(UserService userService) {
         this.userService = userService;
-    }
+    }*/
     }
 
