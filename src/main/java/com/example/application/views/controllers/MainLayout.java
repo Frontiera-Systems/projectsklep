@@ -1,12 +1,12 @@
 package com.example.application.views.controllers;
 
+import com.example.application.repository.ItemRepository;
 import com.example.application.security.SecurityService;
+import com.example.application.service.SearchService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.HasMenuItems;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
@@ -30,9 +30,13 @@ public class MainLayout extends AppLayout {
     private Nav breadcrumbNav;
     private OrderedList breadcrumbList;
     private SecurityService securityService;
+    private ItemRepository itemRepository;
 
-    public MainLayout(@Autowired SecurityService securityService) {
+
+    public MainLayout(@Autowired SecurityService securityService, @Autowired ItemRepository itemRepository, @Autowired SearchService searchService) {
         this.securityService = securityService;
+
+        HorizontalLayout searchBarLayout = searchService.createSearchBar();
 
         Component user;
         if (securityService.getAuthenticatedUser() != null) {
@@ -41,11 +45,11 @@ public class MainLayout extends AppLayout {
             user = loggedUserMenu(false);
         }
 
-        addNavbarContent(user);
+        addNavbarContent(user, searchBarLayout);
     }
 
 
-    private void addNavbarContent(Component userButton) {
+    private void addNavbarContent(Component userButton, HorizontalLayout searchBarLayout) {
 
         Icon logo = new Icon();
         logo.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
@@ -78,8 +82,8 @@ public class MainLayout extends AppLayout {
         navbar.setWidth("80%");
         navbar.setAlignItems(FlexComponent.Alignment.CENTER);
         navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        navbar.add(logo,searchBar(),userInterfaceRoot);
-        navbar.setFlexGrow(1,searchBar());
+        navbar.add(logo,searchBarLayout,userInterfaceRoot);
+        navbar.setFlexGrow(1,searchBarLayout);
         navbar.addClassNames(LumoUtility.Padding.Vertical.NONE);
 
         VerticalLayout menuBar = new VerticalLayout();
@@ -159,10 +163,17 @@ public class MainLayout extends AppLayout {
         }
     }
 
-    private Component searchBar() {
+    /*private Component searchBar(ItemRepository itemRepository) {
+
+        this.itemRepository = itemRepository;
+        // Upewnij się, że itemRepository nie jest null
+        if (itemRepository == null) {
+            throw new IllegalStateException("itemRepository is null");
+        }
+
         HorizontalLayout searchBar = new HorizontalLayout();
         searchBar.setWidth("30%");
-        ComboBox<String> searchBox = new ComboBox<>();
+        ComboBox<Item> searchBox = new ComboBox<>();
         Button searchButton = new Button(new Icon(VaadinIcon.SEARCH));
         searchBar.setSpacing(false);
 
@@ -170,6 +181,11 @@ public class MainLayout extends AppLayout {
         searchBox.addClassName("no-arrow");
         searchBox.setWidth("300%");
         searchBox.getStyle().set("--vaadin-input-field-height","50px");
+        searchBox.setItemLabelGenerator(Item::getName);
+        searchBox.setItems(query -> {
+            String filter = query.getFilter().orElse("");  // Uzyskanie tekstu filtru
+            return itemRepository.findByNameContainingIgnoreCase(filter).stream();  // Zwraca Stream<Item>
+        });
 
         searchButton.getStyle().set("--vaadin-button-height","50px");
         searchButton.setAriaLabel("Szukaj");
@@ -178,7 +194,7 @@ public class MainLayout extends AppLayout {
         searchBar.add(searchButton);
         searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.Vertical.XSMALL);
         return searchBar;
-    }
+    }*/
 
     private Component breadcrumb() {
         breadcrumbNav = new Nav();
