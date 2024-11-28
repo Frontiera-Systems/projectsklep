@@ -1,6 +1,5 @@
 package com.example.application.views.controllers;
 
-import com.example.application.repository.ItemRepository;
 import com.example.application.security.SecurityService;
 import com.example.application.service.SearchService;
 import com.vaadin.flow.component.Component;
@@ -18,8 +17,6 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.HasDynamicTitle;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +26,10 @@ public class MainLayout extends AppLayout {
 
     private Nav breadcrumbNav;
     private OrderedList breadcrumbList;
-    private SecurityService securityService;
-    private ItemRepository itemRepository;
+    private final SecurityService securityService;
 
 
-    public MainLayout(@Autowired SecurityService securityService, @Autowired ItemRepository itemRepository, @Autowired SearchService searchService) {
+    public MainLayout(@Autowired SecurityService securityService, @Autowired SearchService searchService) {
         this.securityService = securityService;
 
         HorizontalLayout searchBarLayout = searchService.createSearchBar();
@@ -151,50 +147,6 @@ public class MainLayout extends AppLayout {
         //viewTitle.setText(getCurrentPageTitle());
 
     }
-
-    private String getCurrentPageTitle() {
-        if (getContent() == null) {
-            return "";
-        } else if (getContent() instanceof HasDynamicTitle titleHolder) {
-            return titleHolder.getPageTitle();
-        } else {
-            var title = getContent().getClass().getAnnotation(PageTitle.class);
-            return title == null ? "" : title.value();
-        }
-    }
-
-    /*private Component searchBar(ItemRepository itemRepository) {
-
-        this.itemRepository = itemRepository;
-        // Upewnij się, że itemRepository nie jest null
-        if (itemRepository == null) {
-            throw new IllegalStateException("itemRepository is null");
-        }
-
-        HorizontalLayout searchBar = new HorizontalLayout();
-        searchBar.setWidth("30%");
-        ComboBox<Item> searchBox = new ComboBox<>();
-        Button searchButton = new Button(new Icon(VaadinIcon.SEARCH));
-        searchBar.setSpacing(false);
-
-        searchBox.setPlaceholder("Szukaj");
-        searchBox.addClassName("no-arrow");
-        searchBox.setWidth("300%");
-        searchBox.getStyle().set("--vaadin-input-field-height","50px");
-        searchBox.setItemLabelGenerator(Item::getName);
-        searchBox.setItems(query -> {
-            String filter = query.getFilter().orElse("");  // Uzyskanie tekstu filtru
-            return itemRepository.findByNameContainingIgnoreCase(filter).stream();  // Zwraca Stream<Item>
-        });
-
-        searchButton.getStyle().set("--vaadin-button-height","50px");
-        searchButton.setAriaLabel("Szukaj");
-
-        searchBar.add(searchBox);
-        searchBar.add(searchButton);
-        searchBar.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.Vertical.XSMALL);
-        return searchBar;
-    }*/
 
     private Component breadcrumb() {
         breadcrumbNav = new Nav();

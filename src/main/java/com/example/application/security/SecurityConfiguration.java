@@ -18,9 +18,6 @@ public class SecurityConfiguration extends VaadinWebSecurity {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // http.rememberMe().alwaysRemember(false);
-
-        // http.authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/public/**")).permitAll());
         http.authorizeHttpRequests((authz) -> authz
                 .requestMatchers(
                         new AntPathRequestMatcher("/h2-console/**")
@@ -56,10 +53,5 @@ public class SecurityConfiguration extends VaadinWebSecurity {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-   /* private final UserService userService;
-
-    public SecurityConfiguration(UserService userService) {
-        this.userService = userService;
-    }*/
     }
 

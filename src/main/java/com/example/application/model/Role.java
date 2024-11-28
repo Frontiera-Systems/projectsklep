@@ -1,8 +1,12 @@
 package com.example.application.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
 @Entity
+@EqualsAndHashCode(of = "id")
 @Table(name = "roles")
 public class Role {
 
@@ -13,7 +17,6 @@ public class Role {
 
     @Column(name = "name")
     String name;
-
 
     public Integer getId() {
         return id;

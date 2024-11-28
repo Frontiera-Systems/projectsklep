@@ -6,37 +6,24 @@ import com.example.application.model.UserRole;
 import com.example.application.repository.RoleRepository;
 import com.example.application.repository.UserRepository;
 import com.example.application.repository.UserRoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository repository;
+    private final UserRepository repository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-    @Autowired
-    private UserRoleRepository userRoleRepository;
+    private final UserRoleRepository userRoleRepository;
 
-    //private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-
-
-    @Autowired
-    public UserService(@Lazy UserRepository repository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, UserRoleRepository userRoleRepository) {
-        this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
-        this.userRoleRepository = userRoleRepository;
-    }
 
     public boolean registerUser(User user, String roleName){
         if (repository.existsByUsername(user.getUsername())) {

@@ -1,6 +1,5 @@
 package com.example.application.security;
 
-import com.example.application.Application;
 import com.example.application.views.controllers.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.html.H1;
@@ -12,17 +11,18 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Route(value = "login", layout = MainLayout.class)
 @PageTitle("Login")
 @AnonymousAllowed
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
-    private LoginForm login = new LoginForm();
-    private LoginI18n i18n = LoginI18n.createDefault();
-    private LoginI18n.Header i18nHeader = new LoginI18n.Header();
+    private final LoginForm login = new LoginForm();
+    private final LoginI18n i18n = LoginI18n.createDefault();
+
     LoginI18n.Form i18nForm = i18n.getForm();
 
     public LoginView() {
@@ -54,8 +54,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         add(new H1("ZALOGUJ SIĘ"),login,registerLink);
     }
 
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
-
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         if(beforeEnterEvent.getLocation()
@@ -64,5 +62,20 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
                 .containsKey("error")) {
             login.setError(true);
         }
+
+        if (getAuthenticatedUser()) {
+            beforeEnterEvent.forwardTo("/"); // Przekierowanie na stronę główną
+        }
     }
+
+    public boolean getAuthenticatedUser() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Object principal = context.getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+           return true;
+        }
+        // Anonymous or no authentication.
+        return false;
+    }
+
 }

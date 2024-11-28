@@ -10,26 +10,27 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Stream;
 @Component
 public class RegistrationForm extends FormLayout {
 
-    private H1 title;
+    private final TextField username;
 
-    private TextField username;
+    private final PasswordField password;
+    private final PasswordField passwordConfirm;
 
-    private PasswordField password;
-    private PasswordField passwordConfirm;
-
+    @Getter
     private Span errorMessageField;
 
+    @Getter
     private Button submitButton;
 
 
     public RegistrationForm() {
-        title = new H1("REJESTRACJA");
+        H1 title = new H1("REJESTRACJA");
         Div spacer = new Div();
         username = new TextField("Login");
 
@@ -87,10 +88,6 @@ public class RegistrationForm extends FormLayout {
     public PasswordField getPasswordField() { return password; }
 
     public PasswordField getPasswordConfirmField() { return passwordConfirm; }
-
-    public Span getErrorMessageField() { return errorMessageField; }
-
-    public Button getSubmitButton() { return submitButton; }
 
     private void setRequiredIndicatorVisible(HasValueAndElement<?, ?>... components) {
         Stream.of(components).forEach(comp -> comp.setRequiredIndicatorVisible(true));
