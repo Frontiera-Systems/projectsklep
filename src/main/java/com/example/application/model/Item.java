@@ -1,5 +1,6 @@
 package com.example.application.model;
 
+import com.github.slugify.Slugify;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,6 +34,10 @@ public class Item {
     private String shortDescription;
 
     @Getter
+    @Column(name = "slug")
+    private String slug;
+
+    @Getter
     @Column(name = "long_description")
     private String longDescription;
 
@@ -43,6 +48,24 @@ public class Item {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+
+    public String getFullPath()
+    {
+        if (category == null) {
+            return createSlug(name); // Jeśli brak kategorii, zwracamy tylko nazwę przedmiotu
+        }
+
+        // Pobierz wszystkie kategorie nadrzędne
+        String parentCategories = category.getFullPath();
+        return parentCategories + "/" + createSlug(name);
+    }
+
+    public String createSlug(String name){
+        final Slugify slg = Slugify.builder().build();
+        String result = slg.slugify(name);
+        return result;
+    }
 
 }
 

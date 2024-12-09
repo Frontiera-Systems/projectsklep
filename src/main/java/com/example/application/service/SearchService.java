@@ -2,10 +2,12 @@ package com.example.application.service;
 
 import com.example.application.model.Item;
 import com.example.application.repository.ItemRepository;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.RequiredArgsConstructor;
@@ -41,14 +43,25 @@ public class SearchService {
                 }
         );
 
+        searchBox.addValueChangeListener(event -> {
+            String selectedValue = event.getValue().getName();
+            if (selectedValue != null) {
+                UI.getCurrent().navigate(event.getValue().getFullPath());
+                Notification.show("Wybrano kategorię: " + selectedValue);
+            }
+        });
+
+
         searchButton.getStyle().set("--vaadin-button-height", "50px");
         searchButton.setAriaLabel("Szukaj");
 
-
+        searchBox.addCustomValueSetListener( e -> {
+            String customValue = e.getDetail();
+            UI.getCurrent().navigate("search/" + customValue);
+        });
         // Dodanie listenera do przycisku
         searchButton.addClickListener(e -> {
-            // Możesz tutaj dodać kod do działania przy kliknięciu przycisku
-            // np. załadowanie wyników wyszukiwania
+            String text = searchBox.getValue().getName();
         });
 
 
