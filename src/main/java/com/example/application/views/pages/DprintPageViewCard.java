@@ -1,27 +1,25 @@
 package com.example.application.views.pages;
 
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.ListItem;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.theme.lumo.LumoUtility.AlignItems;
-import com.vaadin.flow.theme.lumo.LumoUtility.Background;
-import com.vaadin.flow.theme.lumo.LumoUtility.BorderRadius;
-import com.vaadin.flow.theme.lumo.LumoUtility.Display;
-import com.vaadin.flow.theme.lumo.LumoUtility.FlexDirection;
-import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
-import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
-import com.vaadin.flow.theme.lumo.LumoUtility.JustifyContent;
-import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import com.vaadin.flow.theme.lumo.LumoUtility.Overflow;
-import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
-import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
-import com.vaadin.flow.theme.lumo.LumoUtility.Width;
+import com.example.application.model.Item;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 public class DprintPageViewCard extends ListItem {
 
-    public DprintPageViewCard(String text, String url) {
+    public DprintPageViewCard(Item item) {
+
+        // Wywołaj pełny konstruktor z danymi produktu
+        createView(item.getShortDescription(), item.getImageUrl(), item.getName(), item.getId(),
+                item.getLongDescription(), item.getPrice());
+    }
+
+    public void createView(String shortdescription, String url, String name, int id, String longDescription, double price) {
+        setWidth("20%");
         addClassNames(Background.CONTRAST_5, Display.FLEX, FlexDirection.COLUMN, AlignItems.START, Padding.MEDIUM,
                 BorderRadius.LARGE);
 
@@ -30,30 +28,37 @@ public class DprintPageViewCard extends ListItem {
                 Margin.Bottom.MEDIUM, Overflow.HIDDEN, BorderRadius.MEDIUM, Width.FULL);
         div.setHeight("160px");
 
-        Image image = new Image();
+        Image image = new Image(url,shortdescription);
         image.setWidth("100%");
-        image.setSrc(url);
-        image.setAlt(text);
-
         div.add(image);
 
-        Span header = new Span();
-        header.addClassNames(FontSize.XLARGE, FontWeight.SEMIBOLD);
-        header.setText("Title");
+        Anchor nameLink = new Anchor("/id",name);
+
+
+        Span header = new Span(nameLink);
+        header.addClassNames(FontSize.MEDIUM, FontWeight.LIGHT);
+
+        Div headerContainer = new Div(header);
+        headerContainer.setHeight("30%");
+        headerContainer.setWidth("100%");
 
         Span subtitle = new Span();
         subtitle.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
-        subtitle.setText("Card subtitle");
+        subtitle.setText("Indeks: " + id);
 
-        Paragraph description = new Paragraph(
-                "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.");
-        description.addClassName(Margin.Vertical.MEDIUM);
+        Button cart = new Button(new Icon(VaadinIcon.CART));
+        cart.addThemeVariants(ButtonVariant.LUMO_LARGE, ButtonVariant.LUMO_ERROR);
+        cart.setAriaLabel("Dodaj do koszyka");
+        cart.setTooltipText("Dodaj do koszyka");
 
         Span badge = new Span();
-        badge.getElement().setAttribute("theme", "badge");
-        badge.setText("Label");
+        badge.setText(price + " zł");
+        badge.addClassNames(FlexDirection.ROW, Display.FLEX, AlignItems.CENTER, "large-font");
+        badge.setWidth("90%");
 
-        add(div, header, subtitle, description, badge);
+        HorizontalLayout priceBuy = new HorizontalLayout(badge, cart);
+
+        add(div, headerContainer, subtitle, priceBuy);
 
     }
 }

@@ -10,5 +10,8 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer> {
     List<Item> findByNameContainingIgnoreCase(String name, PageRequest pageRequest);
+    Item findById(int id);
     long countByNameContainingIgnoreCase(String name);
+    List<Item> findByCategoryId(Long id);
+
 }

@@ -3,6 +3,7 @@ package com.example.application.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 @Data
 @Entity
@@ -10,56 +11,38 @@ import lombok.EqualsAndHashCode;
 @Table(name = "items") // Określenie nazwy tabeli w bazie danych
 public class Item {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generowanie ID
     private int id;
 
-    @Column(name = "name")
+    @Getter
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "quantity") // Określenie nazwy kolumny w tabeli
+    @Getter
+    @Column(name = "quantity", nullable = false) // Określenie nazwy kolumny w tabeli
     private int quantity;
 
+    @Getter
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Getter
     @Column(name = "short_description")
     private String shortDescription;
 
+    @Getter
     @Column(name = "long_description")
     private String longDescription;
 
-    @Column(name = "price")
+    @Getter
+    @Column(name = "price", nullable = false)
     private double price;
 
-    public double getPrice(){
-        return price;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public String getLongDescription() {
-        return longDescription;
-    }
-
-    public String getName(){
-        return name;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 }
 

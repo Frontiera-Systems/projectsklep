@@ -17,12 +17,15 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @AnonymousAllowed
-public class MainLayout extends AppLayout {
+public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterObserver {
 
     private Nav breadcrumbNav;
     private OrderedList breadcrumbList;
@@ -42,6 +45,12 @@ public class MainLayout extends AppLayout {
         }
 
         addNavbarContent(user, searchBarLayout);
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        // Aktualizuj breadcrumb za każdym razem, gdy użytkownik odwiedza nową stronę
+        updateBreadcrumb(event.getLocation().getPath());
     }
 
 
@@ -79,7 +88,8 @@ public class MainLayout extends AppLayout {
         navbar.setAlignItems(FlexComponent.Alignment.CENTER);
         navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         navbar.add(logo,searchBarLayout,userInterfaceRoot);
-        navbar.setFlexGrow(1,searchBarLayout);
+
+       // navbar.setFlexGrow(1,searchBarLayout);
         navbar.addClassNames(LumoUtility.Padding.Vertical.NONE);
 
         VerticalLayout menuBar = new VerticalLayout();
@@ -136,16 +146,6 @@ public class MainLayout extends AppLayout {
             return "";
         }
         return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
-
-    @Override
-    protected void afterNavigation() {
-        super.afterNavigation();
-        // Aktualizacja breadcrumb
-        String irl = UI.getCurrent().getInternals().getActiveViewLocation().getPath();
-        updateBreadcrumb(irl);
-        //viewTitle.setText(getCurrentPageTitle());
-
     }
 
     private Component breadcrumb() {

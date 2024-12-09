@@ -2,8 +2,6 @@ package com.example.application;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -12,9 +10,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Theme(value = "project-sklep")
 public class Application implements AppShellConfigurator {
 
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
+    //private static final Logger log = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
+        System.setProperty("spring.devtools.restart.enabled", "false");
         SpringApplication.run(Application.class, args);
     }
 

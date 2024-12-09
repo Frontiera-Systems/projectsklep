@@ -1,78 +1,71 @@
 package com.example.application.views.pages;
 
-import com.example.application.views.controllers.MainLayout;
+import com.example.application.model.Item;
+import com.example.application.repository.ItemRepository;
+import com.example.application.views.controllers.StoreLayout;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Main;
-import com.vaadin.flow.component.html.OrderedList;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import com.vaadin.flow.theme.lumo.LumoUtility.AlignItems;
-import com.vaadin.flow.theme.lumo.LumoUtility.Display;
-import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
-import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
-import com.vaadin.flow.theme.lumo.LumoUtility.JustifyContent;
-import com.vaadin.flow.theme.lumo.LumoUtility.ListStyleType;
-import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import com.vaadin.flow.theme.lumo.LumoUtility.MaxWidth;
-import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
-import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
+import com.vaadin.flow.theme.lumo.LumoUtility.*;
 
-@Route(value = "/p3", layout = MainLayout.class)
+import java.util.List;
+
+@Route(value = "/p3", layout = StoreLayout.class)
 @PageTitle("P3")
+//@RoutePrefix("mainmenu")
 @AnonymousAllowed
-public class DprintPageView extends Main implements HasComponents, HasStyle {
+
+public class DprintPageView extends Main implements HasComponents, HasStyle, RouterLayout {
 
     private OrderedList imageContainer;
+    private final ItemRepository itemRepository;
 
-    public DprintPageView() {
+    public DprintPageView(ItemRepository itemRepository) {
         constructUI();
+        this.itemRepository = itemRepository;
 
-        imageContainer.add(new DprintPageViewCard("Snow mountains under stars",
-                "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80"));
-        imageContainer.add(new DprintPageViewCard("Snow covered mountain",
-                "https://images.unsplash.com/photo-1512273222628-4daea6e55abb?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80"));
-        imageContainer.add(new DprintPageViewCard("River between mountains",
-                "https://images.unsplash.com/photo-1536048810607-3dc7f86981cb?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=375&q=80"));
-        imageContainer.add(new DprintPageViewCard("Milky way on mountains",
-                "https://images.unsplash.com/photo-1515705576963-95cad62945b6?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=750&q=80"));
-        imageContainer.add(new DprintPageViewCard("Mountain with fog",
-                "https://images.unsplash.com/photo-1513147122760-ad1d5bf68cdb?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"));
-        imageContainer.add(new DprintPageViewCard("Mountain at night",
-                "https://images.unsplash.com/photo-1562832135-14a35d25edef?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=815&q=80"));
+        List<Item> items = itemRepository.findAll();
+
+        for (Item product : items){
+            imageContainer.add(new DprintPageViewCard(product));
+        }
 
     }
 
+
     private void constructUI() {
         addClassNames("dprint-page-view");
-        addClassNames(MaxWidth.SCREEN_LARGE, Margin.Horizontal.AUTO, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
+        addClassNames(MaxWidth.SCREEN_XLARGE, Margin.Horizontal.AUTO, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
 
         HorizontalLayout container = new HorizontalLayout();
         container.addClassNames(AlignItems.CENTER, JustifyContent.BETWEEN);
 
         VerticalLayout headerContainer = new VerticalLayout();
-        H2 header = new H2("Beautiful photos");
+        H2 header = new H2("Beautiful cars");
         header.addClassNames(Margin.Bottom.NONE, Margin.Top.XLARGE, FontSize.XXXLARGE);
-        Paragraph description = new Paragraph("Royalty free photos and pictures, courtesy of Unsplash");
+        Paragraph description = new Paragraph("kici kici");
         description.addClassNames(Margin.Bottom.XLARGE, Margin.Top.NONE, TextColor.SECONDARY);
         headerContainer.add(header, description);
 
         Select<String> sortBy = new Select<>();
-        sortBy.setLabel("Sort by");
-        sortBy.setItems("Popularity", "Newest first", "Oldest first");
-        sortBy.setValue("Popularity");
+        sortBy.setLabel("Sortuj");
+        sortBy.setItems("Popularność", "Cena rosnąco", "Cena malejąco");
+        sortBy.setValue("Popularność");
 
         imageContainer = new OrderedList();
-        imageContainer.addClassNames(Gap.MEDIUM, Display.GRID, ListStyleType.NONE, Margin.NONE, Padding.NONE);
+        //imageContainer.addClassNames(Gap.MEDIUM, Display.GRID, ListStyleType.NONE, Margin.NONE, Padding.NONE);
+        imageContainer.addClassNames(Gap.MEDIUM, Display.FLEX, FlexDirection.ROW, FlexWrap.WRAP, Margin.NONE, Padding.NONE, JustifyContent.CENTER);
 
         container.add(headerContainer, sortBy);
-        add(container, imageContainer);
+        setWidthFull();
+        add(container,imageContainer);
 
     }
 }

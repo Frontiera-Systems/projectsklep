@@ -43,3 +43,33 @@ login-form::part(form-title) {
       font-weight: bold;  /* Pogrubienie */
       color: #0077cc;     /* Zmiana koloru tekstu */
 }
+
+.large-font {
+      font-size: 24px; /* Rozmiar czcionki */
+      font-weight: bold; /* Opcjonalnie: pogrubienie */
+      color: #333; /* Opcjonalnie: kolor tekstu */
+}
+
+/* Styl dla siatki galerii */
+.gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Tworzy kolumny, które automatycznie dopasowują się do szerokości */
+      gap: 16px; /* Odstęp między obrazkami */
+      margin: 16px;
+      padding: 0;
+}
+
+/* Styl dla kontenerów obrazów */
+.image-wrapper {
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      background-color: #f0f0f0; /* Kolor tła dla obrazów */
+}
+
+.image-wrapper img {
+      width: 100%;
+      height: auto;
+      object-fit: cover; /* Dopasowuje obraz do kontenera */
+}

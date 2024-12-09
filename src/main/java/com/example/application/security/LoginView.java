@@ -3,9 +3,11 @@ package com.example.application.security;
 import com.example.application.views.controllers.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.popover.Popover;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -30,6 +32,19 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         setJustifyContentMode(JustifyContentMode.CENTER);
         setAlignItems(Alignment.CENTER);
+
+        login.addForgotPasswordListener(event -> {
+            Popover popover = new Popover();
+
+            // Dodanie zawartości do Popover
+            popover.add(new Span("Aby zrestartowac haslo, wyslij zdjecie stup administratorowi strony"));
+
+            // Powiązanie Popover z przyciskiem
+            popover.setTarget(login);
+
+            // Otwieranie Popover
+            popover.setOpened(true);
+        });
 
         i18nForm.setTitle("");
         i18nForm.setUsername("Email");
