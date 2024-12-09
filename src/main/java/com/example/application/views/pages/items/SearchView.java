@@ -43,8 +43,9 @@ public class SearchView  extends Main implements HasComponents, HasStyle, Router
         items.sort(Comparator.comparing(Item::getName, String::compareToIgnoreCase));
         items.forEach(product -> itemsContainer.add(new ItemsViewCard(product)));
 
-        ItemView itemView = new ItemView(items,itemsContainer);
-        add(itemView);
+        ItemView itemView = new ItemView(items);
+        itemsContainer.add(itemView);
+        add(itemsContainer);
     }
 
 }

@@ -6,7 +6,6 @@ import com.example.application.repository.CategoryRepository;
 import com.example.application.repository.ItemRepository;
 import com.example.application.views.pages.categories.CategoriesViewCard;
 import com.example.application.views.pages.items.ItemView;
-import com.example.application.views.pages.items.ItemsViewCard;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -30,6 +29,8 @@ public class DynamicRoute extends VerticalLayout implements BeforeEnterObserver 
     private OrderedList imageContainer;
     private OrderedList itemsContainer;
     private List<Item> itemss;
+    private ItemView itemView;
+    private List<Item> allItems;
 
     public DynamicRoute(CategoryRepository categoryRepository, ItemRepository itemRepository) {
         this.categoryRepository = categoryRepository;
@@ -38,10 +39,9 @@ public class DynamicRoute extends VerticalLayout implements BeforeEnterObserver 
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-
+        allItems = new ArrayList<>();
 
         itemsContainer = new OrderedList();
-
 
         String path = event.getRouteParameters().get("path").orElse("");
         System.out.println("Path: " + path);
@@ -79,10 +79,14 @@ public class DynamicRoute extends VerticalLayout implements BeforeEnterObserver 
             allCategories.forEach(cat -> {
                 itemss = itemRepository.findByCategoryId(cat.getId());
                 itemss.sort(Comparator.comparing(Item::getName, String::compareToIgnoreCase));
-                itemss.forEach(product -> itemsContainer.add(new ItemsViewCard(product)));
+                itemss.forEach(product -> {
+                    //itemsContainer.add(new ItemsViewCard(product));
+                    allItems.add(product);
+                });
             });
 
-            ItemView itemView = new ItemView(itemss,itemsContainer);
+            itemView = new ItemView(allItems);
+
             add(itemView);
 
             return;
@@ -156,7 +160,6 @@ public class DynamicRoute extends VerticalLayout implements BeforeEnterObserver 
                 .reduce((parent, child) -> parent + "/" + child)
                 .orElse(""); // Zabezpieczenie na wypadek pustej listy
     }
-
 
 
 }
