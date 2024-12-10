@@ -1,5 +1,7 @@
 package com.example.application.views.controllers;
 
+import com.example.application.model.Category;
+import com.example.application.repository.CategoryRepository;
 import com.example.application.security.SecurityService;
 import com.example.application.service.SearchService;
 import com.vaadin.flow.component.Component;
@@ -24,16 +26,19 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @AnonymousAllowed
 public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterObserver {
 
     private Nav breadcrumbNav;
     private OrderedList breadcrumbList;
     private final SecurityService securityService;
+    private final CategoryRepository categoryRepository;
 
-
-    public MainLayout(@Autowired SecurityService securityService, @Autowired SearchService searchService) {
+    public MainLayout(@Autowired SecurityService securityService, @Autowired SearchService searchService, CategoryRepository categoryRepository) {
         this.securityService = securityService;
+        this.categoryRepository = categoryRepository;
 
         HorizontalLayout searchBarLayout = searchService.createSearchBar();
 
@@ -165,22 +170,26 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         mainMenu.setOpenOnHover(true);
         mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
 
-
-        MenuItem elektronika = createIconItem(mainMenu,VaadinIcon.BED,"Elektronika",null);
-        MenuItem smartHome = createIconItem(mainMenu,VaadinIcon.HOME,"SmartHome",null);
-
-        MenuItem druk3D = createIconItem(mainMenu,VaadinIcon.AMBULANCE,"Druk 3D",null);
-
-        SubMenu firstItemSubMenu = druk3D.getSubMenu();
-        MenuItem test = firstItemSubMenu.addItem("Podstrona 1");
-        test.addClickListener(click -> UI.getCurrent().navigate("/reg"));
-
-
-        SubMenu testSubMenu = test.getSubMenu();
-        MenuItem test2 = testSubMenu.addItem("Podstrona 2");
-        test2.addClickListener(click -> UI.getCurrent().navigate("/p3"));
-
+        List<Category> parentCategories = categoryRepository.findByParentIsNull();
+        parentCategories.forEach(category -> {
+            MenuItem t = createIconItem(mainMenu,VaadinIcon.valueOf(category.getImageUrl()),category.getName(),null);
+            dynamiMenuBar(category,t);
+        });
         return mainMenu;
+    }
+
+    private void dynamiMenuBar(Category category, MenuItem menuItem){
+        List<Category> kid = category.getSubcategories();
+        menuItem.addClickListener(click -> {
+           UI.getCurrent().navigate(category.getFullPath());
+        });
+        if(!kid.isEmpty()){
+            SubMenu submenu = menuItem.getSubMenu();
+            kid.forEach(kids -> {
+                MenuItem kidSub = submenu.addItem(kids.getName());
+                dynamiMenuBar(kids,kidSub);
+            });
+        }
     }
 
     private MenuItem createIconItem(HasMenuItems menu, VaadinIcon iconName,

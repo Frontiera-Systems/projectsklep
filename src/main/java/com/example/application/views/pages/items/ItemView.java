@@ -125,6 +125,7 @@ public class ItemView extends Main implements HasComponents, HasStyle {
     private void updateItems() {
         itemsContainer.removeAll();
         // Oblicz zakres elementów dla aktualnej strony
+
         int start = (currentPage - 1) * ITEMS_PER_PAGE;
         int end = Math.min(start + ITEMS_PER_PAGE, items.size());
 

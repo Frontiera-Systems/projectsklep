@@ -37,7 +37,8 @@ public class Category {
 
     @Setter
     @Getter
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "CLOB")
+    @Lob
     private String description;
 
     @Setter

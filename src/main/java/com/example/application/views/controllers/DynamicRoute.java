@@ -71,20 +71,20 @@ public class DynamicRoute extends VerticalLayout implements BeforeEnterObserver 
             subcategories.forEach(subcategory -> imageContainer.add(new CategoriesViewCard(subcategory)));
 
             List<Category> allCategories = getAllSubcategoriesIncludingCurrent(category);
+            allCategories.addFirst(category);
             List<Category> parentCategories = getAllParentCategories(category);
 
             String categoryPathString = buildCategoryPath(parentCategories);
             System.out.println(categoryPathString);
 
+            allItems.clear();
+
             allCategories.forEach(cat -> {
                 itemss = itemRepository.findByCategoryId(cat.getId());
-                itemss.sort(Comparator.comparing(Item::getName, String::compareToIgnoreCase));
-                itemss.forEach(product -> {
-                    //itemsContainer.add(new ItemsViewCard(product));
-                    allItems.add(product);
-                });
+                allItems.addAll(itemss);
             });
 
+            allItems.sort(Comparator.comparing(Item::getName, String::compareToIgnoreCase));
             itemView = new ItemView(allItems);
 
             add(itemView);
@@ -122,7 +122,7 @@ public class DynamicRoute extends VerticalLayout implements BeforeEnterObserver 
 
     private List<Category> getAllSubcategoriesIncludingCurrent(Category category) {
         List<Category> allCategories = new ArrayList<>();
-        allCategories.add(category); // Dodaj bieżącą kategorię
+        //allCategories.add(category); // Dodaj bieżącą kategorię
 
         List<Category> directSubcategories = categoryRepository.findByParentId(category.getId());
         allCategories.addAll(directSubcategories);
