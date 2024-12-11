@@ -1,8 +1,10 @@
 package com.example.application.service;
 
+import com.example.application.model.Cart;
 import com.example.application.model.Role;
 import com.example.application.model.User;
 import com.example.application.model.UserRole;
+import com.example.application.repository.CartRepository;
 import com.example.application.repository.RoleRepository;
 import com.example.application.repository.UserRepository;
 import com.example.application.repository.UserRoleRepository;
@@ -25,6 +27,7 @@ public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final CartRepository cartRepository;
     public boolean registerUser(User user, String roleName){
         if (repository.existsByUsername(user.getUsername())) {
             return false; // Użytkownik o podanym loginie już istnieje
@@ -36,13 +39,17 @@ public class UserService implements UserDetailsService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user = repository.save(user);
+
+        Cart cart = new Cart();
+        cart.setUser(user); // Powiązanie koszyka z użytkownikiem
+        user.getCarts().add(cart);
+
+
+        repository.save(user);
 
         UserRole userRole = new UserRole();
         userRole.setUser(user);  // Przypisanie użytkownika
         userRole.setRole(role);  // Przypisanie roli
-
-        // Zapisanie powiązania w tabeli pośredniczącej
         userRoleRepository.save(userRole);
 
         return true;

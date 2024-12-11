@@ -810,3 +810,12 @@ java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supporte
 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
+2024-12-11 00:23:37.368683+01:00 jdbc[19]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "ALTER TABLE [*]user DROP COLUMN cart_id"; expected "identifier"; SQL statement:
+ALTER TABLE user DROP COLUMN cart_id [42001-224]
+2024-12-11 00:23:58.976298+01:00 jdbc[19]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "user" not found; SQL statement:
+ALTER TABLE "user" DROP COLUMN cart_id [42102-224]
+2024-12-11 00:26:57.186962+01:00 jdbc[21]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "ALTER TABLE [*]user DROP COLUMN cart_id"; expected "identifier"; SQL statement:
+ALTER TABLE user DROP COLUMN cart_id [42001-224]

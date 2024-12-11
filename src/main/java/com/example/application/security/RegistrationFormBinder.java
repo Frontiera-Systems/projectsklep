@@ -66,6 +66,7 @@ public class RegistrationFormBinder {
                     registrationForm.getUsernameField().setInvalid(true); // Mark the field as invalid
 
                 } else{
+
                     UI.getCurrent().navigate("/login");
                 }
             } catch (ValidationException e) {

@@ -1,7 +1,10 @@
 package com.example.application.security;
 
+import com.example.application.model.User;
+import com.example.application.repository.UserRepository;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +15,12 @@ import org.springframework.stereotype.Component;
 public class SecurityService {
 
     private static final String LOGOUT_SUCCESS_URL = "/";
+
+    private final UserRepository userRepository;
+
+    public SecurityService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public UserDetails getAuthenticatedUser() {
         SecurityContext context = SecurityContextHolder.getContext();
@@ -29,5 +38,18 @@ public class SecurityService {
         logoutHandler.logout(
                 VaadinServletRequest.getCurrent().getHttpServletRequest(), null,
                 null);
+    }
+
+    public Long getAuthenticatedUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName(); // Pobieramy nazwę użytkownika
+
+        // Teraz możesz pobrać użytkownika z bazy danych na podstawie nazwy użytkownika
+        User user = userRepository.findByUsername(username);
+
+        if (user != null) {
+            return user.getId(); // Zwracamy ID użytkownika
+        }
+        return null; // Jeśli użytkownik nie istnieje
     }
 }
