@@ -3,7 +3,6 @@ package com.example.application.service;
 import com.example.application.model.Cart;
 import com.example.application.model.CartItem;
 import com.example.application.model.Item;
-import com.example.application.model.User;
 import com.example.application.repository.CartItemRepository;
 import com.example.application.repository.CartRepository;
 import com.example.application.repository.ItemRepository;
@@ -11,6 +10,7 @@ import com.example.application.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartService {
@@ -25,54 +25,46 @@ public class CartService {
         this.itemRepository = itemRepository;
     }
 
-    public Cart createCart(User user) {
-        Cart cart = new Cart();
-        cart.setUser(user);
-        return cartRepository.save(cart);
-    }
-
-    public boolean addItemToCart(Long userId, int productId, int quantity, int cartNumber) {
+    public void addItemToCart(Long userId, int productId, int quantity) {
 
         // Znalezienie koszyka użytkownika
-        List<Cart> cartList = cartRepository.findByUserId(userId);
-        if (cartList.size() > cartNumber){
-            Cart cart = cartList.get(cartNumber);
-            Item item = itemRepository.findById(productId);
-            // Dodanie przedmiotu do koszyka
+        Cart cart = cartRepository.findByUserId(userId);
+        Item item = itemRepository.findById(productId);
 
-            CartItem cartItem = new CartItem();
-            cartItem.setItem(item);
-            cartItem.setQuantity(quantity);
+        Optional<CartItem> cartItem = cartItemRepository.findByItemIdAndCartId(item.getId(), cart.getId());
 
-            cart.addItem(cartItem);
-            cartItemRepository.save(cartItem);
-
-            // Zapisz koszyk
-            cartRepository.save(cart);
-            return true;
+        if (cartItem.isPresent()) {
+            CartItem cartItem1 = cartItem.get();
+            int totalquantity = cartItem1.getQuantity() + quantity;
+            if (totalquantity > item.getQuantity()) {
+                cartItem1.setQuantity(item.getQuantity());
+            } else {
+                cartItem1.setQuantity(totalquantity);
+            }
+            cartItemRepository.save(cartItem1);
         } else {
-            System.out.println("Nie istnieje taki numer koszyka");
+            CartItem cartItem2 = new CartItem();
+            cartItem2.setItem(item);
+            if (quantity > item.getQuantity()) {
+                cartItem2.setQuantity(item.getQuantity());
+            } else {
+                cartItem2.setQuantity(quantity);
+            }
+            cart.addItem(cartItem2);
+            cartItemRepository.save(cartItem2);
         }
 
-        return false;
+        // Zapisz koszyk
+        cartRepository.save(cart);
     }
 
     public List<CartItem> getItemsInCart(Long cartId) {
         return cartItemRepository.findByCartId(cartId);
     }
 
-    public Cart removeItemFromCart(Long userId, Long cartItemId, Long cartId) {
-        Cart cart = cartRepository.findAllByIdAndUserId(cartId,userId);
-        if (cart != null) {
-            CartItem item = cartItemRepository.findById(cartItemId).orElse(null);
-            if (item != null && item.getCart().equals(cart)) {
-                cart.removeItem(item);
-                cartItemRepository.delete(item);
-                cartRepository.save(cart);
-            }
-        }
-        return cart;
-    }
+    public void removeCartItem(Long cartItemId) {
+        cartItemRepository.deleteById(cartItemId);
 
+    }
 
 }

@@ -57,11 +57,15 @@ public class SearchService {
 
         searchBox.addCustomValueSetListener( e -> {
             String customValue = e.getDetail();
-            UI.getCurrent().navigate("search/" + customValue);
+            UI.getCurrent().navigate("szukaj/" + customValue);
         });
         // Dodanie listenera do przycisku
         searchButton.addClickListener(e -> {
             String text = searchBox.getValue().getName();
+            if(text != null){
+                UI.getCurrent().navigate("szukaj/" + text);
+            }
+
         });
 
 

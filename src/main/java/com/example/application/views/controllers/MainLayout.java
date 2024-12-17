@@ -43,13 +43,17 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         HorizontalLayout searchBarLayout = searchService.createSearchBar();
 
         Component user;
+        Component cart;
+
         if (securityService.getAuthenticatedUser() != null) {
             user = loggedUserMenu(true);
+            cart = cartButton(true);
         } else {
             user = loggedUserMenu(false);
+            cart = cartButton(false);
         }
 
-        addNavbarContent(user, searchBarLayout);
+        addNavbarContent(user, cart, searchBarLayout);
     }
 
     @Override
@@ -59,11 +63,12 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
     }
 
 
-    private void addNavbarContent(Component userButton, HorizontalLayout searchBarLayout) {
+    private void addNavbarContent(Component userButton, Component cartButton, HorizontalLayout searchBarLayout) {
 
         Icon logo = new Icon();
         logo.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
         logo.setSize("100px");
+
 
         Anchor loginLink = iconAnchor("ZALOGUJ","/login", VaadinIcon.USER);
         Anchor loginLink2 = iconAnchor("KOSZYK","/podstrona", VaadinIcon.CART);
@@ -81,7 +86,7 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         Div userInterfaceRight = new Div();
         userInterfaceRight.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Padding.Horizontal.XLARGE, LumoUtility.Gap.XLARGE);
         userInterfaceRight.add(loginLink3);
-        userInterfaceRight.add(loginLink4);
+        userInterfaceRight.add(cartButton);
 
         Div userInterfaceRoot = new Div();
         userInterfaceRoot.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
@@ -233,6 +238,20 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
             logout.addItem("Wyloguj sie").addClickListener(click -> securityService.logout());
         } else {
             userAll.addClickListener(click2 -> UI.getCurrent().navigate("/login"));
+        }
+
+        return mainMenu;
+    }
+
+    private MenuBar cartButton(boolean logged){
+        MenuBar mainMenu = new MenuBar();
+        mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
+        MenuItem userAll = createIconItem(mainMenu, VaadinIcon.CART, "KOSZYK", null);
+
+        if(logged){
+            userAll.addClickListener(click2 -> UI.getCurrent().navigate("koszyk"));
+        } else {
+            userAll.addClickListener(click2 -> UI.getCurrent().navigate("koszyk"));
         }
 
         return mainMenu;

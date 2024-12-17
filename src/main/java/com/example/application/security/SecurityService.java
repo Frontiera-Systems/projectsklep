@@ -50,6 +50,6 @@ public class SecurityService {
         if (user != null) {
             return user.getId(); // Zwracamy ID użytkownika
         }
-        return null; // Jeśli użytkownik nie istnieje
+        return 0L; // Jeśli użytkownik nie istnieje
     }
 }

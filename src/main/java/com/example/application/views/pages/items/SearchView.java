@@ -13,10 +13,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
-import java.util.Comparator;
 import java.util.List;
 
-@Route(value = "search/:path*", layout = StoreLayout.class)
+@Route(value = "szukaj/:path*", layout = StoreLayout.class)
 @AnonymousAllowed
 public class SearchView  extends Main implements HasComponents, HasStyle, RouterLayout, BeforeEnterObserver {
 
@@ -39,13 +38,13 @@ public class SearchView  extends Main implements HasComponents, HasStyle, Router
 
         removeAll();
 
-        itemsContainer = new OrderedList();
+        /*itemsContainer = new OrderedList();
         items.sort(Comparator.comparing(Item::getName, String::compareToIgnoreCase));
-        items.forEach(product -> itemsContainer.add(new ItemsViewCard(product)));
+        items.forEach(product -> itemsContainer.add(new ItemsViewCard(product)));*/
 
         ItemView itemView = new ItemView(items);
-        itemsContainer.add(itemView);
-        add(itemsContainer);
+        //itemsContainer.add(itemView);
+        add(itemView);
     }
 
 }

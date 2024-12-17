@@ -6,6 +6,7 @@ import com.example.application.repository.CategoryRepository;
 import com.example.application.repository.ItemRepository;
 import com.example.application.views.pages.categories.CategoriesViewCard;
 import com.example.application.views.pages.items.ItemView;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -59,6 +60,10 @@ public class DynamicRoute extends VerticalLayout implements BeforeEnterObserver 
 
         // Sprawdź, czy ścieżka pasuje do kategorii
         String lastSegment = path.substring(path.lastIndexOf('/') + 1);
+        if(lastSegment.equals("koszyk")){
+            UI.getCurrent().navigate("/koszyk/0");
+        }
+
         Category category = categoryRepository.findBySlug(lastSegment)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 

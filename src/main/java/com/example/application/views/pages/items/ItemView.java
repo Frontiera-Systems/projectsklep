@@ -1,6 +1,7 @@
 package com.example.application.views.pages.items;
 
 import com.example.application.model.Item;
+import com.example.application.service.CartService;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
@@ -24,6 +25,7 @@ public class ItemView extends Main implements HasComponents, HasStyle {
     private List<Item> items;
     private Button nextButton;
     private Button prevButton;
+    private CartService cartService;
 
     public ItemView(List<Item> items) {
 
