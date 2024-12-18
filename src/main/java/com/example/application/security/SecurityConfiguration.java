@@ -16,8 +16,21 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 public class SecurityConfiguration extends VaadinWebSecurity {
 
+    private final LoginAttemptService loginAttemptService;
+
+    public SecurityConfiguration(LoginAttemptService loginAttemptService) {
+        this.loginAttemptService = loginAttemptService;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http
+                .formLogin(form -> form.loginPage("/login")
+                        .defaultSuccessUrl("/")
+                        .failureHandler(new CustomAuthenticationFailureHandler(loginAttemptService))
+                        .successHandler(new CustomAuthenticationSuccessHandler(loginAttemptService))
+                        .permitAll());
+
         http.authorizeHttpRequests((authz) -> authz
                 .requestMatchers(
                         new AntPathRequestMatcher("/h2-console/**")
@@ -37,6 +50,7 @@ public class SecurityConfiguration extends VaadinWebSecurity {
                 )
         );
 
+
         setLoginView(http, LoginView.class);
         super.configure(http);
 
@@ -53,5 +67,5 @@ public class SecurityConfiguration extends VaadinWebSecurity {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    }
+}
 
