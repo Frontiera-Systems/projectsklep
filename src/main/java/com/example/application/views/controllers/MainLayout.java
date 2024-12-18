@@ -71,8 +71,6 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
 
 
         Anchor loginLink = iconAnchor("ZALOGUJ","/login", VaadinIcon.USER);
-        Anchor loginLink2 = iconAnchor("KOSZYK","/podstrona", VaadinIcon.CART);
-        Anchor loginLink3 = iconAnchor("SCHOWEK","/p3", VaadinIcon.BARCODE);
         Anchor loginLink4 = iconAnchor("KONTAKT","/podstrona/podstrona2", VaadinIcon.CHAT);
 
         //Button loginButton = accountButton();
@@ -80,12 +78,12 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         Div userInterfaceLeft = new Div();
         userInterfaceLeft.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Padding.Horizontal.XLARGE, LumoUtility.Gap.XLARGE);
         userInterfaceLeft.add(userButton);
-        userInterfaceLeft.add(loginLink2);
+        //userInterfaceLeft.add(loginLink2);
 
 
         Div userInterfaceRight = new Div();
         userInterfaceRight.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Padding.Horizontal.XLARGE, LumoUtility.Gap.XLARGE);
-        userInterfaceRight.add(loginLink3);
+       // userInterfaceRight.add(loginLink3);
         userInterfaceRight.add(cartButton);
 
         Div userInterfaceRoot = new Div();
