@@ -1,10 +1,16 @@
 package com.example.application.views.controllers;
 
+import com.example.application.model.Cart;
+import com.example.application.model.CartItem;
 import com.example.application.model.Category;
-import com.example.application.repository.CategoryRepository;
+import com.example.application.repository.*;
 import com.example.application.security.SecurityService;
+import com.example.application.service.CartService;
 import com.example.application.service.SearchService;
+import com.example.application.service.SessionCartService;
+import com.example.application.updateevents.CartUpdatedEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -14,6 +20,7 @@ import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -26,7 +33,9 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @AnonymousAllowed
 public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterObserver {
@@ -35,23 +44,43 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
     private OrderedList breadcrumbList;
     private final SecurityService securityService;
     private final CategoryRepository categoryRepository;
+    private final CartService cartService;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final SessionCartService sessionCartService;
+    private Map<CartItem, Integer> temporaryQuantities = new HashMap<>();
+    private MenuItem userAll;
+    private SubMenu cartitems;
+    private MultiSelectListBox<CartItem> itemList;
+    MultiSelectListBox<Integer> sessionItems;
 
-    public MainLayout(@Autowired SecurityService securityService, @Autowired SearchService searchService, CategoryRepository categoryRepository) {
+
+    public MainLayout(@Autowired SecurityService securityService, @Autowired SearchService searchService, CategoryRepository categoryRepository, UserRepository userRepository, CartService cartService, ItemRepository itemRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, SessionCartService sessionCartService) {
         this.securityService = securityService;
         this.categoryRepository = categoryRepository;
+        this.cartService = cartService;
+        this.cartRepository = cartRepository;
+        this.cartItemRepository = cartItemRepository;
+        this.sessionCartService = sessionCartService;
 
         HorizontalLayout searchBarLayout = searchService.createSearchBar();
 
         Component user;
         Component cart;
 
-        if (securityService.getAuthenticatedUser() != null) {
+
+        Long userId = securityService.getAuthenticatedUserId();
+
+        ComponentUtil.addListener(UI.getCurrent(), CartUpdatedEvent.class, event -> {
+            updateCartIcon(event.getUserId());
+        });
+
+        if (userId != 0L) {
             user = loggedUserMenu(true);
-            cart = cartButton(true);
         } else {
             user = loggedUserMenu(false);
-            cart = cartButton(false);
         }
+        cart = cartButton(userId);
 
         addNavbarContent(user, cart, searchBarLayout);
     }
@@ -70,8 +99,8 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         logo.setSize("100px");
 
 
-        Anchor loginLink = iconAnchor("ZALOGUJ","/login", VaadinIcon.USER);
-        Anchor loginLink4 = iconAnchor("KONTAKT","/podstrona/podstrona2", VaadinIcon.CHAT);
+        Anchor loginLink = iconAnchor("ZALOGUJ", "/login", VaadinIcon.USER);
+        Anchor loginLink4 = iconAnchor("KONTAKT", "/podstrona/podstrona2", VaadinIcon.CHAT);
 
         //Button loginButton = accountButton();
 
@@ -83,7 +112,7 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
 
         Div userInterfaceRight = new Div();
         userInterfaceRight.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Padding.Horizontal.XLARGE, LumoUtility.Gap.XLARGE);
-       // userInterfaceRight.add(loginLink3);
+        // userInterfaceRight.add(loginLink3);
         userInterfaceRight.add(cartButton);
 
         Div userInterfaceRoot = new Div();
@@ -95,13 +124,13 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         navbar.setWidth("80%");
         navbar.setAlignItems(FlexComponent.Alignment.CENTER);
         navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        navbar.add(logo,searchBarLayout,userInterfaceRoot);
+        navbar.add(logo, searchBarLayout, userInterfaceRoot);
 
-       // navbar.setFlexGrow(1,searchBarLayout);
+        // navbar.setFlexGrow(1,searchBarLayout);
         navbar.addClassNames(LumoUtility.Padding.Vertical.NONE);
 
         VerticalLayout menuBar = new VerticalLayout();
-        menuBar.add(navbar,menuBars(),breadcrumb());
+        menuBar.add(navbar, menuBars(), breadcrumb());
         menuBar.setAlignItems(FlexComponent.Alignment.CENTER);
 
         addToNavbar(menuBar);
@@ -139,7 +168,7 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
                 // Dodanie Anchor z nazwą segmentu
                 Anchor anchor = new Anchor(currentPath.toString(), capitalize(segment));
                 listItem.add(anchor);
-                if(i == segments.length - 1) {
+                if (i == segments.length - 1) {
                     anchor.getStyle().set("color", "red");
                 } else {
                     anchor.getStyle().set("color", "rgba(0, 0, 0, 0.6)");
@@ -168,29 +197,29 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         return breadcrumbNav;
     }
 
-    private Component menuBars(){
+    private Component menuBars() {
         MenuBar mainMenu = new MenuBar();
         mainMenu.setOpenOnHover(true);
         mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
 
         List<Category> parentCategories = categoryRepository.findByParentIsNull();
         parentCategories.forEach(category -> {
-            MenuItem t = createIconItem(mainMenu,VaadinIcon.valueOf(category.getImageUrl()),category.getName(),null);
-            dynamiMenuBar(category,t);
+            MenuItem t = createIconItem(mainMenu, VaadinIcon.valueOf(category.getImageUrl()), category.getName(), null);
+            dynamiMenuBar(category, t);
         });
         return mainMenu;
     }
 
-    private void dynamiMenuBar(Category category, MenuItem menuItem){
+    private void dynamiMenuBar(Category category, MenuItem menuItem) {
         List<Category> kid = category.getSubcategories();
         menuItem.addClickListener(click -> {
-           UI.getCurrent().navigate(category.getFullPath());
+            UI.getCurrent().navigate(category.getFullPath());
         });
-        if(!kid.isEmpty()){
+        if (!kid.isEmpty()) {
             SubMenu submenu = menuItem.getSubMenu();
             kid.forEach(kids -> {
                 MenuItem kidSub = submenu.addItem(kids.getName());
-                dynamiMenuBar(kids,kidSub);
+                dynamiMenuBar(kids, kidSub);
             });
         }
     }
@@ -205,22 +234,22 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         MenuItem item = menu.addItem(icon, e -> {
         });
 
-            item.add(new Text(" " + label));
+        item.add(new Text(" " + label));
 
         return item;
     }
 
-    private Anchor iconAnchor(String text, String url, VaadinIcon iconName){
+    private Anchor iconAnchor(String text, String url, VaadinIcon iconName) {
         Icon icon = new Icon(iconName);
         Span tekst = new Span(text);
-        tekst.getElement().getStyle().set("font-size","20px");
+        tekst.getElement().getStyle().set("font-size", "20px");
         Anchor anchor = new Anchor(url, "");
         anchor.addClassName("icon_link");
         anchor.add(icon, tekst);
         return anchor;
     }
 
-    private MenuBar loggedUserMenu(boolean logged){
+    private MenuBar loggedUserMenu(boolean logged) {
         MenuBar mainMenu = new MenuBar();
         mainMenu.setOpenOnHover(true);
         mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
@@ -241,17 +270,59 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         return mainMenu;
     }
 
-    private MenuBar cartButton(boolean logged){
+    private MenuBar cartButton(Long userId) {
         MenuBar mainMenu = new MenuBar();
+       // mainMenu.setOpenOnHover(true);
         mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
-        MenuItem userAll = createIconItem(mainMenu, VaadinIcon.CART, "KOSZYK", null);
 
-        if(logged){
-            userAll.addClickListener(click2 -> UI.getCurrent().navigate("koszyk"));
+
+        if (userId != 0L) {
+            Cart cart = cartRepository.findByUserId(userId);
+            List<CartItem> itemsInCart = cartItemRepository.findByCartId(cart.getId());
+            itemList = cartService.multiitembox(itemsInCart, temporaryQuantities, cart);
+            userAll = createIconItem(mainMenu, VaadinIcon.CART, "KOSZYK ( " + itemsInCart.size() + " )", null);
+            cartitems = userAll.getSubMenu();
+            cartitems.addItem(itemList).addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
+
         } else {
-            userAll.addClickListener(click2 -> UI.getCurrent().navigate("koszyk"));
+            Map<Integer, Integer> cart = sessionCartService.getCart();
+            sessionItems = cartService.multiitemboxForSessionCart(sessionCartService, cart);
+            userAll = createIconItem(mainMenu, VaadinIcon.CART, "KOSZYK ( " + cart.size() + " )", null);
+            cartitems = userAll.getSubMenu();
+            cartitems.addItem(sessionItems).addClassName(LumoUtility.MaxWidth.SCREEN_SMALL);
+
         }
+
+
+        userAll.addClickListener(click2 -> UI.getCurrent().navigate("koszyk"));
 
         return mainMenu;
     }
+
+    public void updateCartIcon(Long userId) {
+        if (userId != 0L) {
+            Cart cart = cartRepository.findByUserId(userId);
+            List<CartItem> itemsInCart = cartItemRepository.findByCartId(cart.getId());
+            updateTextInMenuItem(userAll,"KOSZYK ( " + itemsInCart.size() + " )");
+            cartitems.removeAll();
+            cartitems.addItem(itemList).addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
+
+        } else {
+            Map<Integer, Integer> cart = sessionCartService.getCart();
+            updateTextInMenuItem(userAll,"KOSZYK ( " + cart.size() + " )");
+            MultiSelectListBox<Integer> sessionItems = cartService.multiitemboxForSessionCart(sessionCartService, cart);
+            cartitems.removeAll();
+            cartitems.addItem(sessionItems).addClassName(LumoUtility.MaxWidth.SCREEN_SMALL);
+        }
+    }
+
+    public void updateTextInMenuItem(MenuItem item, String newLabel) {
+        item.getChildren()
+                .filter(child -> child instanceof Text)
+                .map(child -> (Text) child)
+                .findFirst() // Znajdź pierwszy element typu Text
+                .ifPresent(text -> text.setText(newLabel)); // Zaktualizuj tekst
+    }
+
+
 }

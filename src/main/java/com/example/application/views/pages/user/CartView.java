@@ -52,92 +52,35 @@ public class CartView extends HorizontalLayout implements BeforeEnterObserver, B
         this.securityService = securityService;
         this.cartService = cartService;
         this.sessionCartService = sessionCartService;
+        setAlignItems(FlexComponent.Alignment.CENTER);
+        setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
     }
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         Long userId = securityService.getAuthenticatedUserId();
         if(userId.equals(0L)){
-            System.out.println("koszyk sesji");
-            sessionCart();
+            constructSessionUI();
         } else {
             User user = userRepository.findById(userId);
             Cart cart = cartRepository.findByUserId(user.getId());
-            constructUi(cart);
-
+            constructUI(cart);
             }
     }
 
-    private void constructUi(Cart cart) {
+
+    private void constructUI(Cart cart) {
         removeAll();
-
-        MultiSelectListBox<CartItem> itemList = new MultiSelectListBox<>();
         List<CartItem> itemsInCart = cartItemRepository.findByCartId(cart.getId());
-        itemList.setItems(itemsInCart);
-
-        Dialog confirmDelete = new Dialog();
-        confirmDelete.setHeaderTitle("Na pewno chcesz usunac przedmiot z koszyka?");
-        confirmDelete.setModal(false);
-        Button confirmButton = new Button(new Icon(VaadinIcon.CHECK));
-        Button declineButton = new Button(new Icon(VaadinIcon.CLOSE));
-        confirmDelete.getFooter().add(confirmButton, declineButton);
-
-
-        itemList.setRenderer(new ComponentRenderer<>(cartItem -> {
-            HorizontalLayout row = new HorizontalLayout();
-
-            Item item = itemRepository.findById(Math.toIntExact(cartItem.getItem().getId()));
-            itemList.setItemEnabledProvider(status -> item.getQuantity() > 0);
-
-
-            Image productImage = new Image(item.getImageUrl(), "");
-            productImage.setWidth("50px");
-            productImage.setHeight("50px");
-
-            Span productName = new Span(item.getName());
-            Span productIndeks = new Span("Indeks: " + item.getId());
-
-            IntegerField cartitemquantity = new IntegerField();
-            cartitemquantity.setStepButtonsVisible(true);
-            cartitemquantity.setMin(0);
-            cartitemquantity.setMax(item.getQuantity());
-            cartitemquantity.setLabel("Ilość");
-            cartitemquantity.setHelperText("Maksymalnie " + item.getQuantity() + " produktów");
-            cartitemquantity.setValue(cartItem.getQuantity());
-
-            cartitemquantity.addValueChangeListener(value -> {
-                Integer newQuantity = value.getValue();
-                System.out.println(newQuantity);
-                if (newQuantity > 0) {
-                    temporaryQuantities.put(cartItem, newQuantity);
-
-                } else {
-                    confirmDelete.open();
-                    confirmButton.addClickListener(e -> {
-                        cartService.removeCartItem(cartItem.getId());
-                        List<CartItem> updatedItemsInCart = cartItemRepository.findByCartId(cart.getId());
-                        itemList.setItems(updatedItemsInCart);
-                        confirmDelete.close();
-
-                    });
-
-                    declineButton.addClickListener(e -> {
-                        confirmDelete.close();
-                        cartitemquantity.setValue(1);
-                    });
-
-                }
-            });
-
-            productIndeks.getStyle().set("color", "var(--lumo-secondary-text-color)").set("font-size", "var(--lumo-font-size-s)");
-
-            VerticalLayout nameIndeks = new VerticalLayout(productName, productIndeks);
-            row.add(productImage, nameIndeks, cartitemquantity);
-            row.setAlignItems(FlexComponent.Alignment.CENTER);
-            return row;
-        }));
-
+        MultiSelectListBox<CartItem> itemList = cartService.multiitembox(itemsInCart, temporaryQuantities, cart);
         add(itemList);
+    }
+
+    private void constructSessionUI(){
+        removeAll();
+        Map<Integer, Integer> cart = sessionCartService.getCart();
+        MultiSelectListBox<Integer> sessionItems = cartService.multiitemboxForSessionCart(sessionCartService,cart);
+        add(sessionItems);
     }
 
     private void sessionCart(){

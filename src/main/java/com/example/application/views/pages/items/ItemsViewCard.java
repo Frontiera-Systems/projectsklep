@@ -5,7 +5,10 @@ import com.example.application.security.SecurityService;
 import com.example.application.service.CartService;
 import com.example.application.service.SessionCartService;
 import com.example.application.service.SpringContext;
+import com.example.application.updateevents.CartUpdatedEvent;
 import com.github.slugify.Slugify;
+import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -78,10 +81,13 @@ public class ItemsViewCard extends ListItem {
 
         cart.addClickListener(click -> {
             Long userId = securityService.getAuthenticatedUserId();
+
             if(userId.equals(0L)){
                 sessionCartService.addToCart(item.getId(),1);
+                ComponentUtil.fireEvent(UI.getCurrent(), new CartUpdatedEvent(this, userId));
             } else {
                 cartService.addItemToCart(userId, item.getId(), 1);
+                ComponentUtil.fireEvent(UI.getCurrent(), new CartUpdatedEvent(this, userId));
             }
         });
 

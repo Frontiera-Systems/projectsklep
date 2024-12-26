@@ -42,14 +42,8 @@ public class SecurityService {
 
     public Long getAuthenticatedUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName(); // Pobieramy nazwę użytkownika
+        User user = userRepository.findByUsername(authentication.getName());
 
-        // Teraz możesz pobrać użytkownika z bazy danych na podstawie nazwy użytkownika
-        User user = userRepository.findByUsername(username);
-
-        if (user != null) {
-            return user.getId(); // Zwracamy ID użytkownika
-        }
-        return 0L; // Jeśli użytkownik nie istnieje
+        return user != null ? user.getId() : 0L;
     }
 }

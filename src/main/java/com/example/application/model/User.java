@@ -1,10 +1,7 @@
 package com.example.application.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,11 +29,12 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserRole> userRoles; // Używamy UserRole, a nie Role bezpośrednio
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cart> carts = new ArrayList<>();
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Cart cart;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -47,6 +45,23 @@ public class User implements UserDetails {
         }
         return authorityList;
     }
+
+    public List<Role> getRoles() {
+        return userRoles.stream()
+                .map(UserRole::getRole)
+                .toList();
+    }
+
+/*
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                '}'; // Usuń pola powodujące cykliczne zależności
+    }
+*/
+
 
 }
 

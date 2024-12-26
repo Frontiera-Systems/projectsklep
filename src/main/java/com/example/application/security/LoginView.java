@@ -24,11 +24,19 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private final LoginForm login = new LoginForm();
     private final LoginI18n i18n = LoginI18n.createDefault();
-
+    private final LoginAttemptService loginAttemptService;
     LoginI18n.Form i18nForm = i18n.getForm();
 
-    public LoginView() {
+    final ReCaptcha reCaptcha = new ReCaptcha(
+            "6LfZUJ4qAAAAAGWbh3wKkSbNlxMVUvPFnD2oiwMU",
+            "6LfZUJ4qAAAAAG2DFv3Yaf19TlGcpNE0ipdJrL5v"
+    );
+
+    public LoginView(LoginAttemptService loginAttemptService) {
+        this.loginAttemptService = loginAttemptService;
+
         setSizeFull();
+
 
         setJustifyContentMode(JustifyContentMode.CENTER);
         setAlignItems(Alignment.CENTER);
@@ -62,11 +70,12 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         Html registerLink = new Html("<a href='reg' style='color: var(--lumo-primary-color); text-decoration: none;'>Nie masz konta? Zarejestruj się tutaj</a>");
 
+        System.out.println(loginAttemptService.isBlocked());
+         login.setI18n(i18n);
+
         login.setAction("login");
 
-        login.setI18n(i18n);
-
-        add(new H1("ZALOGUJ SIĘ"),login,registerLink);
+        add(new H1("ZALOGUJ SIĘ"),login,reCaptcha,registerLink);
     }
 
     @Override

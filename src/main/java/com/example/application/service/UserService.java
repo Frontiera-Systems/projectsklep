@@ -4,16 +4,20 @@ import com.example.application.model.Cart;
 import com.example.application.model.Role;
 import com.example.application.model.User;
 import com.example.application.model.UserRole;
-import com.example.application.repository.CartRepository;
 import com.example.application.repository.RoleRepository;
 import com.example.application.repository.UserRepository;
 import com.example.application.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -27,7 +31,6 @@ public class UserService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final CartRepository cartRepository;
     public boolean registerUser(User user, String roleName){
         if (repository.existsByUsername(user.getUsername())) {
             return false; // Użytkownik o podanym loginie już istnieje
@@ -42,7 +45,6 @@ public class UserService implements UserDetailsService {
 
         Cart cart = new Cart();
         cart.setUser(user); // Powiązanie koszyka z użytkownikiem
-        user.getCarts().add(cart);
 
 
         repository.save(user);
@@ -56,7 +58,23 @@ public class UserService implements UserDetailsService {
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return repository.findByUsername(username);
+        User user = repository.findByUsername(username);
+
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found: " + username);
+        }
+
+        // Convert User entity to UserDetails
+        List<GrantedAuthority> authorities = user.getUserRoles()
+                .stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRole().getName()))
+                .collect(Collectors.toList());
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                authorities
+        );
     }
 
 }

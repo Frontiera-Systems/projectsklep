@@ -22,7 +22,6 @@ public class LoginAttemptService {
 
     // Sprawdzenie, czy użytkownik przekroczył limit prób
     public boolean isBlocked() {
-        System.out.println(attemptsCache.getOrDefault("captcha", 0));
         return attemptsCache.getOrDefault("captcha", 0) >= MAX_ATTEMPTS;
     }
 }
