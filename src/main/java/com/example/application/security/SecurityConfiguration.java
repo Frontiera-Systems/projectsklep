@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -17,6 +18,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfiguration extends VaadinWebSecurity {
 
     private final LoginAttemptService loginAttemptService;
+    private ReCaptchaFilter reCaptchaFilter;
 
     public SecurityConfiguration(LoginAttemptService loginAttemptService) {
         this.loginAttemptService = loginAttemptService;
@@ -24,22 +26,25 @@ public class SecurityConfiguration extends VaadinWebSecurity {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.addFilterBefore(new ReCaptchaFilter("6LfZUJ4qAAAAAG2DFv3Yaf19TlGcpNE0ipdJrL5v"), UsernamePasswordAuthenticationFilter.class);
+
         http
+
                 .formLogin(form -> form.loginPage("/login")
-                        .defaultSuccessUrl("/")
-                        .failureHandler(new CustomAuthenticationFailureHandler(loginAttemptService))
-                        .successHandler(new CustomAuthenticationSuccessHandler(loginAttemptService))
+                        .defaultSuccessUrl("/",true)
+                        .failureUrl("/login?error=true")
+                        .loginProcessingUrl("/login")
                         .permitAll());
 
         http.authorizeHttpRequests((authz) -> authz
                 .requestMatchers(
-                        new AntPathRequestMatcher("/h2-console/**")
+                        new AntPathRequestMatcher("/VAADIN/**")
                 ).permitAll()
         );
 
         http.csrf((csrf) ->
                 csrf.ignoringRequestMatchers(
-                        new AntPathRequestMatcher("/h2-console/**")
+                        new AntPathRequestMatcher("/login")
                 ).csrfTokenRepository(
                         CookieCsrfTokenRepository.withHttpOnlyFalse()
                 )
@@ -67,5 +72,6 @@ public class SecurityConfiguration extends VaadinWebSecurity {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
 

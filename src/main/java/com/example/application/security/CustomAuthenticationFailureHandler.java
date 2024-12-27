@@ -12,7 +12,6 @@ import java.io.IOException;
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
     private final LoginAttemptService loginAttemptService;
-
     public CustomAuthenticationFailureHandler(LoginAttemptService loginAttemptService) {
         this.loginAttemptService = loginAttemptService;
     }

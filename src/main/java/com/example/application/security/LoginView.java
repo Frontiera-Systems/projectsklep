@@ -2,16 +2,20 @@ package com.example.application.security;
 
 import com.example.application.views.controllers.MainLayout;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.popover.Popover;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,16 +28,12 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private final LoginForm login = new LoginForm();
     private final LoginI18n i18n = LoginI18n.createDefault();
-    private final LoginAttemptService loginAttemptService;
+
     LoginI18n.Form i18nForm = i18n.getForm();
+    ReCaptcha reCaptcha = new ReCaptcha("6LfZUJ4qAAAAAGWbh3wKkSbNlxMVUvPFnD2oiwMU","6LfZUJ4qAAAAAG2DFv3Yaf19TlGcpNE0ipdJrL5v");
 
-    final ReCaptcha reCaptcha = new ReCaptcha(
-            "6LfZUJ4qAAAAAGWbh3wKkSbNlxMVUvPFnD2oiwMU",
-            "6LfZUJ4qAAAAAG2DFv3Yaf19TlGcpNE0ipdJrL5v"
-    );
+    public LoginView() {
 
-    public LoginView(LoginAttemptService loginAttemptService) {
-        this.loginAttemptService = loginAttemptService;
 
         setSizeFull();
 
@@ -70,11 +70,34 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         Html registerLink = new Html("<a href='reg' style='color: var(--lumo-primary-color); text-decoration: none;'>Nie masz konta? Zarejestruj się tutaj</a>");
 
-        System.out.println(loginAttemptService.isBlocked());
+
+        login.addLoginListener(event -> {
+            String username = event.getUsername();
+            String password = event.getPassword();
+            String captchaToken = reCaptcha.getToken(); // Get the token from the reCAPTCHA component
+
+            // Check if the token is missing
+            if (captchaToken == null || captchaToken.isEmpty()) {
+                Notification.show("Please complete the reCAPTCHA challenge.", 5000, Notification.Position.MIDDLE);
+                return;
+            }
+
+            // Send the login request with the reCAPTCHA token
+            UI.getCurrent().getPage().executeJs(
+                    "const form = new FormData();" +
+                            "form.append('username', $0);" +
+                            "form.append('password', $1);" +
+                            "form.append('g-recaptcha-response', $2);" +
+                            "fetch('/login', {method: 'POST', body: form}).then(response => {" +
+                            "    if (response.ok) { window.location.href = '/home'; } else { alert('Login failed.'); }" +
+                            "});",
+                    username, password, captchaToken
+            );
+        });;
+
          login.setI18n(i18n);
 
         login.setAction("login");
-
         add(new H1("ZALOGUJ SIĘ"),login,reCaptcha,registerLink);
     }
 
@@ -100,6 +123,18 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         }
         // Anonymous or no authentication.
         return false;
+    }
+
+    private String getRemoteAddr() {
+        VaadinRequest vaadinRequest = VaadinService.getCurrentRequest();
+        if (vaadinRequest != null) {
+            String forwardedFor = vaadinRequest.getHeader("X-Forwarded-For");
+            if (forwardedFor != null && !forwardedFor.isEmpty()) {
+                return forwardedFor.split(",")[0].trim();
+            }
+            return vaadinRequest.getRemoteAddr();
+        }
+        return "unknown";
     }
 
 }
