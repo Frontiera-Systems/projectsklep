@@ -20,3 +20,4 @@ drivers/
 error-screenshots/
 webpack.generated.js
 data/sklepdb.trace.db
+data/sklepdb.lock.db

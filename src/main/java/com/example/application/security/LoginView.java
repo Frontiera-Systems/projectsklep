@@ -1,5 +1,6 @@
 package com.example.application.security;
 
+import com.example.application.service.ReCaptchaProperties;
 import com.example.application.views.controllers.MainLayout;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.UI;
@@ -30,9 +31,16 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     private final LoginI18n i18n = LoginI18n.createDefault();
 
     LoginI18n.Form i18nForm = i18n.getForm();
-    ReCaptcha reCaptcha = new ReCaptcha("6LfZUJ4qAAAAAGWbh3wKkSbNlxMVUvPFnD2oiwMU","6LfZUJ4qAAAAAG2DFv3Yaf19TlGcpNE0ipdJrL5v");
+    private final String sitekey;
+    private final String secretkey;
 
-    public LoginView() {
+
+    public LoginView(ReCaptchaProperties properties) {
+
+        this.sitekey = properties.getSitekey();
+        this.secretkey = properties.getSecretkey();
+
+        ReCaptcha reCaptcha = new ReCaptcha(sitekey,secretkey);
 
 
         setSizeFull();

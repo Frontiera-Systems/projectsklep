@@ -1,5 +1,6 @@
 package com.example.application.security;
 
+import com.example.application.service.ReCaptchaProperties;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,15 +19,16 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfiguration extends VaadinWebSecurity {
 
     private final LoginAttemptService loginAttemptService;
-    private ReCaptchaFilter reCaptchaFilter;
+   private final String secretkey;
 
-    public SecurityConfiguration(LoginAttemptService loginAttemptService) {
+    public SecurityConfiguration(LoginAttemptService loginAttemptService, ReCaptchaProperties properties) {
         this.loginAttemptService = loginAttemptService;
+        this.secretkey = properties.getSecretkey();
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(new ReCaptchaFilter("6LfZUJ4qAAAAAG2DFv3Yaf19TlGcpNE0ipdJrL5v"), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new ReCaptchaFilter(secretkey), UsernamePasswordAuthenticationFilter.class);
 
         http
 
