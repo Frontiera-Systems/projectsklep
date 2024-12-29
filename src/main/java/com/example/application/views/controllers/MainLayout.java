@@ -82,6 +82,7 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         }
         cart = cartButton(userId);
 
+        setClassName("custom-navbar");
         addNavbarContent(user, cart, searchBarLayout);
     }
 
@@ -98,6 +99,8 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         logo.setIcon(VaadinIcon.CLOUD_DOWNLOAD);
         logo.setSize("100px");
 
+        Image logoImage = new Image("https://u.cubeupload.com/korylek/looongcat.png","");
+        logoImage.setHeight("100px");
 
         Anchor loginLink = iconAnchor("ZALOGUJ", "/login", VaadinIcon.USER);
         Anchor loginLink4 = iconAnchor("KONTAKT", "/podstrona/podstrona2", VaadinIcon.CHAT);
@@ -124,7 +127,7 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         navbar.setWidth("80%");
         navbar.setAlignItems(FlexComponent.Alignment.CENTER);
         navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        navbar.add(logo, searchBarLayout, userInterfaceRoot);
+        navbar.add(logoImage, searchBarLayout, userInterfaceRoot);
 
         // navbar.setFlexGrow(1,searchBarLayout);
         navbar.addClassNames(LumoUtility.Padding.Vertical.NONE);
@@ -132,8 +135,15 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         VerticalLayout menuBar = new VerticalLayout();
         menuBar.add(navbar, menuBars(), breadcrumb());
         menuBar.setAlignItems(FlexComponent.Alignment.CENTER);
+        menuBar.setWidth("60%");
+        menuBar.addClassNames(LumoUtility.Gap.XSMALL);
 
-        addToNavbar(menuBar);
+        HorizontalLayout rootLayout = new HorizontalLayout(menuBar);
+        rootLayout.setWidthFull();
+       /* rootLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        rootLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);*/
+        rootLayout.addClassName("custom-horizontal-layout");
+        addToNavbar(rootLayout);
     }
 
 

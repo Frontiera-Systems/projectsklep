@@ -74,3 +74,38 @@ login-form::part(form-title) {
       object-fit: cover; /* Dopasowuje obraz do kontenera */
 }
 
+.custom-horizontal-layout {
+      background-color: #ffffff; /* Opcjonalny kolor tła */
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1); /* Dodaje cień */
+      padding: 0px; /* Opcjonalny padding wewnętrzny */
+      row-gap: 0px;
+      border-radius: 8px; /* Opcjonalne zaokrąglenie rogów */
+      align-items: center; /* Wyrównanie elementów w pionie */
+      justify-content: center;
+}
+
+.left-cat-menu {
+      row-gap: 0;
+      align-items: center ;
+      border-radius: 8px;
+      justify-content: center;
+      border: 0.5px solid rgba(211, 209, 209, 0.58);
+      padding: 0px;
+      width: 10%;
+}
+
+.custom-text{
+      padding-left: 15px;
+      font-size: 15px;
+      color: #444343;
+}
+
+.custom-text-bold{
+      padding-left: 10px;
+      color: #2d2d2d;
+}
+
+.custom-details {
+      background-color: rgba(190, 189, 189, 0.15);
+      /* Opcjonalny kolor tła */ /* Odstęp od lewego marginesu dla całego komponentu */
+}
