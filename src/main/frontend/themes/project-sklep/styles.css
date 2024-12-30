@@ -86,12 +86,13 @@ login-form::part(form-title) {
 
 .left-cat-menu {
       row-gap: 0;
-      align-items: center ;
+      align-items: start;
       border-radius: 8px;
       justify-content: center;
       border: 0.5px solid rgba(211, 209, 209, 0.58);
       padding: 0px;
       width: 10%;
+      height: 100%;
 }
 
 .custom-text{

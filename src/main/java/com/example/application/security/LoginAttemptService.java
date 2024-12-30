@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class LoginAttemptService {
-    private final int MAX_ATTEMPTS = 3; // Maksymalna liczba prób
+    private final int MAX_ATTEMPTS = 6; // Maksymalna liczba prób
     private final Map<String, Integer> attemptsCache = new ConcurrentHashMap<>();
 
     // Zwiększenie liczby prób logowania

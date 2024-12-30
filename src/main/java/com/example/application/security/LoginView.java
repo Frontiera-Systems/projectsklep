@@ -8,7 +8,6 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.popover.Popover;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -33,19 +32,17 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     LoginI18n.Form i18nForm = i18n.getForm();
     private final String sitekey;
     private final String secretkey;
+    private final LoginAttemptService loginAttemptService;
 
-
-    public LoginView(ReCaptchaProperties properties) {
+    public LoginView(ReCaptchaProperties properties, LoginAttemptService loginAttemptService) {
 
         this.sitekey = properties.getSitekey();
         this.secretkey = properties.getSecretkey();
+        this.loginAttemptService = loginAttemptService;
 
-        ReCaptcha reCaptcha = new ReCaptcha(sitekey,secretkey);
-
+        ReCaptcha reCaptcha = new ReCaptcha(sitekey, secretkey);
 
         setSizeFull();
-
-
         setJustifyContentMode(JustifyContentMode.CENTER);
         setAlignItems(Alignment.CENTER);
 
@@ -84,12 +81,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             String password = event.getPassword();
             String captchaToken = reCaptcha.getToken(); // Get the token from the reCAPTCHA component
 
-            // Check if the token is missing
-            if (captchaToken == null || captchaToken.isEmpty()) {
-                Notification.show("Please complete the reCAPTCHA challenge.", 5000, Notification.Position.MIDDLE);
-                return;
-            }
-
             // Send the login request with the reCAPTCHA token
             UI.getCurrent().getPage().executeJs(
                     "const form = new FormData();" +
@@ -101,17 +92,23 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
                             "});",
                     username, password, captchaToken
             );
-        });;
+        });
 
-         login.setI18n(i18n);
-
+        login.setI18n(i18n);
         login.setAction("login");
-        add(new H1("ZALOGUJ SIĘ"),login,reCaptcha,registerLink);
+
+        if(loginAttemptService.isBlocked()){
+            removeAll();
+            add(new H1("ZALOGUJ SIĘ"), login, reCaptcha, registerLink);
+        } else {
+            removeAll();
+            add(new H1("ZALOGUJ SIĘ"), login, registerLink);
+        }
     }
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        if(beforeEnterEvent.getLocation()
+        if (beforeEnterEvent.getLocation()
                 .getQueryParameters()
                 .getParameters()
                 .containsKey("error")) {
@@ -127,7 +124,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         SecurityContext context = SecurityContextHolder.getContext();
         Object principal = context.getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
-           return true;
+            return true;
         }
         // Anonymous or no authentication.
         return false;

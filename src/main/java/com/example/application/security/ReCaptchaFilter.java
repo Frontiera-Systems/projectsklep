@@ -19,9 +19,11 @@ public class ReCaptchaFilter implements Filter {
 
     private static final String VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify";
     private final String secretKey;
+    private final LoginAttemptService loginAttemptService;
 
-    public ReCaptchaFilter(String secretKey) {
+    public ReCaptchaFilter(String secretKey, LoginAttemptService loginAttemptService) {
         this.secretKey = secretKey;
+        this.loginAttemptService = loginAttemptService;
     }
 
     @Override
@@ -30,35 +32,33 @@ public class ReCaptchaFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        if ("/login".equals(request.getServletPath()) && "POST".equalsIgnoreCase(request.getMethod())) {
-            String recaptchaResponse = request.getParameter("g-recaptcha-response");
+        if ("/login".equals(request.getServletPath()) && "POST".equalsIgnoreCase(request.getMethod()) && loginAttemptService.isBlocked()) {
+                String recaptchaResponse = request.getParameter("g-recaptcha-response");
 
-            // Log all request parameters for debugging
-            Enumeration<String> parameterNames = request.getParameterNames();
-            System.out.println("ReCaptchaFilter: Received parameters:");
-            while (parameterNames.hasMoreElements()) {
-                String paramName = parameterNames.nextElement();
-                System.out.println(paramName + " = " + request.getParameter(paramName));
-            }
+                // Log all request parameters for debugging
+                Enumeration<String> parameterNames = request.getParameterNames();
+                System.out.println("ReCaptchaFilter: Received parameters:");
+                while (parameterNames.hasMoreElements()) {
+                    String paramName = parameterNames.nextElement();
+                    System.out.println(paramName + " = " + request.getParameter(paramName));
+                }
 
-            // Check if the reCAPTCHA token exists
-            if (recaptchaResponse == null || recaptchaResponse.isBlank()) {
-                System.out.println("ReCaptchaFilter: Missing 'g-recaptcha-response'. Rejecting request.");
-               response.sendRedirect("/login");
-                //response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing reCAPTCHA response");
-                return;
-            }
+                // Check if the reCAPTCHA token exists
+                if (recaptchaResponse == null || recaptchaResponse.isBlank()) {
+                    System.out.println("ReCaptchaFilter: Missing 'g-recaptcha-response'. Rejecting request.");
+                    //response.sendRedirect("/login?error=true");
+                    //response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing reCAPTCHA response");
+                    return;
+                }
 
-            // Validate the reCAPTCHA response
-            boolean isValid = validateReCaptchaResponse(recaptchaResponse, request.getRemoteAddr());
-            if (!isValid) {
-                System.out.println("ReCaptchaFilter: Invalid 'g-recaptcha-response'. Rejecting request.");
-                response.sendRedirect("/login");
-                //response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid reCAPTCHA response");
-                return;
-            }
-
-
+                // Validate the reCAPTCHA response
+                boolean isValid = validateReCaptchaResponse(recaptchaResponse, request.getRemoteAddr());
+                if (!isValid) {
+                    System.out.println("ReCaptchaFilter: Invalid 'g-recaptcha-response'. Rejecting request.");
+                    //response.sendRedirect("/login?error=true");
+                    //response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid reCAPTCHA response");
+                    return;
+                }
 
             System.out.println("ReCaptchaFilter: Valid 'g-recaptcha-response'. Proceeding...");
         }

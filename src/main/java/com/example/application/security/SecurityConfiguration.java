@@ -28,13 +28,14 @@ public class SecurityConfiguration extends VaadinWebSecurity {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(new ReCaptchaFilter(secretkey), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new ReCaptchaFilter(secretkey,loginAttemptService), UsernamePasswordAuthenticationFilter.class);
 
         http
 
                 .formLogin(form -> form.loginPage("/login")
                         .defaultSuccessUrl("/",true)
-                        .failureUrl("/login?error=true")
+                        .failureHandler(new CustomAuthenticationFailureHandler(loginAttemptService))
+                        .successHandler(new CustomAuthenticationSuccessHandler(loginAttemptService))
                         .loginProcessingUrl("/login")
                         .permitAll());
 
