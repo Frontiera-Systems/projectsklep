@@ -31,34 +31,6 @@ public class StoreLayout extends HorizontalLayout implements RouterLayout {
 
     }
 
-/*    public void AccordionMenu(){
-        VerticalLayout accoridonMenu = new VerticalLayout();
-        accoridonMenu.setWidth("10%");
-        accoridonMenu.setSpacing(true);
-
-        VerticalLayout filamentsSubCoentent = new VerticalLayout(
-                new Anchor("/product","PETG"),
-                new Anchor("/p3","ABS"),
-                new Anchor("/p3","TPU"),
-                new Anchor("/p3","PLA+")
-        );
-
-
-        VerticalLayout minikomputeryContent = new VerticalLayout(
-                new Details( new Anchor("/p3","Filamenty"),filamentsSubCoentent ),
-                new Anchor("/p3","HotEnd"),
-                new Anchor("/p3","Wydruki"),
-                new Anchor("/p3","Bed"),
-                new Anchor("/p3","Specyfiki")
-        );
-
-        Details printLeftMenu = new Details(new Anchor("druk3d","DRUK 3D"),minikomputeryContent);
-        printLeftMenu.setOpened(true);
-        printLeftMenu.addThemeVariants(DetailsVariant.FILLED);
-        accoridonMenu.add(printLeftMenu);
-        add(accoridonMenu);
-    }*/
-
     public void AccordionMenu() {
         VerticalLayout accordionMenu = new VerticalLayout();
         /*accordionMenu.addClassNames(LumoUtility.Gap.XSMALL);

@@ -3,7 +3,10 @@
   "license": "UNLICENSED",
   "type": "module",
   "dependencies": {
+    "@polymer/iron-a11y-keys-behavior": "3.0.1",
     "@polymer/polymer": "3.5.2",
+    "@splidejs/splide": "3.6.12",
+    "@splidejs/splide-extension-video": "0.6.8",
     "@vaadin/bundles": "24.5.3",
     "@vaadin/common-frontend": "0.0.19",
     "@vaadin/polymer-legacy-adapter": "24.5.3",
@@ -46,7 +49,10 @@
   },
   "vaadin": {
     "dependencies": {
+      "@polymer/iron-a11y-keys-behavior": "3.0.1",
       "@polymer/polymer": "3.5.2",
+      "@splidejs/splide": "3.6.12",
+      "@splidejs/splide-extension-video": "0.6.8",
       "@vaadin/bundles": "24.5.3",
       "@vaadin/common-frontend": "0.0.19",
       "@vaadin/polymer-legacy-adapter": "24.5.3",
@@ -87,7 +93,7 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "b703e8b30695e5aa2dd6a2c751333d353dc584ea2f57e50b662830b0ee70c459"
+    "hash": "faffa51ad05dc73fca77533a3392ec3ce8d6ca8ef5affb203777ef889a992c62"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -108,6 +114,9 @@
     "proj4": "$proj4",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "@vaadin/vaadin-lumo-styles": "$@vaadin/vaadin-lumo-styles",
-    "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles"
+    "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles",
+    "@splidejs/splide": "$@splidejs/splide",
+    "@splidejs/splide-extension-video": "$@splidejs/splide-extension-video",
+    "@polymer/iron-a11y-keys-behavior": "$@polymer/iron-a11y-keys-behavior"
   }
 }

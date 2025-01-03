@@ -93,6 +93,7 @@ login-form::part(form-title) {
       padding: 0px;
       width: 10%;
       height: 100%;
+      min-width: 10%;
 }
 
 .custom-text{
@@ -109,4 +110,13 @@ login-form::part(form-title) {
 .custom-details {
       background-color: rgba(190, 189, 189, 0.15);
       /* Opcjonalny kolor tła */ /* Odstęp od lewego marginesu dla całego komponentu */
+}
+
+.carousel-item {
+      width: 100%;
+      height: 100%;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-position: 50% 50%; /* Można też użyć "center" */
+      border-radius: 8px;
 }

@@ -1,9 +1,11 @@
 package com.example.application.views.pages.items;
 
 import com.example.application.model.Item;
-import com.example.application.service.CartService;
+import com.example.application.updateevents.ItemViewUpdatedEvent;
+import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.OrderedList;
@@ -19,23 +21,25 @@ import java.util.Objects;
 
 public class ItemView extends Main implements HasComponents, HasStyle {
 
-    private int ITEMS_PER_PAGE = 24;
-    private int currentPage = 1;
+    private final int ITEMS_PER_PAGE = 24;
+    private int currentPage = 0;
     private OrderedList itemsContainer;
     private List<Item> items;
     private Button nextButton;
     private Button prevButton;
-    private CartService cartService;
+    private Button currentPageButton;
 
     public ItemView(List<Item> items) {
 
         this.items = items;
         itemsContainer = new OrderedList();
-
         itemsContainer.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.NONE, LumoUtility.Padding.NONE, LumoUtility.JustifyContent.CENTER);
 
 
-        int totalPages = getTotalPages();
+        ComponentUtil.addListener(UI.getCurrent(), ItemViewUpdatedEvent.class, event -> {
+            updateButton(event.getButton(),event.isStatus());
+        });
+
         updateItems();
 
         addClassNames("dprint-page-view");
@@ -50,7 +54,7 @@ public class ItemView extends Main implements HasComponents, HasStyle {
         itemsContainer.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.NONE, LumoUtility.Padding.NONE, LumoUtility.JustifyContent.CENTER);
 
         Select<String> sortBy = new Select<>();
-        sortBy.setLabel("Sortuj");
+        sortBy.setLabel("Sortuj " + items.size());
         sortBy.setItems("Nazwa A-Z", "Nazwa Z-A", "Cena rosnąco", "Cena malejąco");
         sortBy.setValue("Nazwa A-Z");
 
@@ -74,13 +78,33 @@ public class ItemView extends Main implements HasComponents, HasStyle {
             updateItems();
         });
 
-        getTotalPages();
-
-        Button currentPageButton = new Button("Strona " + currentPage + " z " + totalPages);
+        currentPageButton = new Button("Strona " + (currentPage + 1) + " z " + (getTotalPages()+1) );
         currentPageButton.setEnabled(false);
 
+        nextButton = new Button("Następna",
+                new Icon(VaadinIcon.ARROW_RIGHT));
+        System.out.println("bolean: " + (getTotalPages() != currentPage));
+        nextButton.setEnabled(getTotalPages() != currentPage);
 
         prevButton = new Button("Poprzednia",
+                new Icon(VaadinIcon.ARROW_LEFT));
+        prevButton.setEnabled(currentPage > 0);
+
+        nextButton.addClickListener(click -> {
+            currentPage++;
+            updateItems();
+            ComponentUtil.fireEvent(UI.getCurrent(), new ItemViewUpdatedEvent(this,getTotalPages() != currentPage,1));
+            ComponentUtil.fireEvent(UI.getCurrent(), new ItemViewUpdatedEvent(this,currentPage > 0,0));
+        });
+
+        prevButton.addClickListener(click -> {
+            currentPage--;
+            updateItems();
+            ComponentUtil.fireEvent(UI.getCurrent(), new ItemViewUpdatedEvent(this,getTotalPages() != currentPage,1));
+            ComponentUtil.fireEvent(UI.getCurrent(), new ItemViewUpdatedEvent(this,currentPage > 0,0));
+        });
+
+   /*     prevButton = new Button("Poprzednia",
                 new Icon(VaadinIcon.ARROW_LEFT), event -> {
             nextButton.setEnabled(true);
             if (currentPage > 1) {
@@ -88,7 +112,7 @@ public class ItemView extends Main implements HasComponents, HasStyle {
                 updateItems();
                 prevButton.setEnabled(true);
             }
-            currentPageButton.setText("Strona " + currentPage + " z " + totalPages);
+
         });
 
         prevButton.setDisableOnClick(true);
@@ -105,12 +129,12 @@ public class ItemView extends Main implements HasComponents, HasStyle {
                 nextButton.setEnabled(true);
             }
 
-            currentPageButton.setText("Strona " + currentPage + " z " + totalPages);
+            currentPageButton.setText("Strona " + currentPage + " z " + getTotalPages());
 
         });
 
         nextButton.setIconAfterText(true);
-        nextButton.setDisableOnClick(true);
+        nextButton.setDisableOnClick(true);*/
 
 
         buttonContainer.add(prevButton, currentPageButton, nextButton);
@@ -120,15 +144,27 @@ public class ItemView extends Main implements HasComponents, HasStyle {
 
     }
 
+    private void updateButton(int buttonType, boolean status) {
+        switch(buttonType){
+            case 0:
+                prevButton.setEnabled(status);
+                break;
+            case 1:
+                nextButton.setEnabled(status);
+                break;
+        }
+        currentPageButton.setText("Strona " + (currentPage + 1) + " z " + (getTotalPages()+1));
+    }
+
     private int getTotalPages() {
-        return (int) Math.ceil((double) items.size() / ITEMS_PER_PAGE);
+        return (int) (Math.ceil((double) items.size() / ITEMS_PER_PAGE)-1);
     }
 
     private void updateItems() {
         itemsContainer.removeAll();
         // Oblicz zakres elementów dla aktualnej strony
 
-        int start = (currentPage - 1) * ITEMS_PER_PAGE;
+        int start = (currentPage) * ITEMS_PER_PAGE;
         int end = Math.min(start + ITEMS_PER_PAGE, items.size());
 
         List<Item> pageItems = items.subList(start, end);
