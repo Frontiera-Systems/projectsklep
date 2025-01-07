@@ -2,7 +2,6 @@ package com.example.application.views.pages.user;
 
 import com.example.application.model.Cart;
 import com.example.application.model.CartItem;
-import com.example.application.model.Item;
 import com.example.application.model.User;
 import com.example.application.repository.CartItemRepository;
 import com.example.application.repository.CartRepository;
@@ -10,20 +9,15 @@ import com.example.application.repository.ItemRepository;
 import com.example.application.repository.UserRepository;
 import com.example.application.security.SecurityService;
 import com.example.application.service.CartService;
+import com.example.application.service.OrderService;
 import com.example.application.service.SessionCartService;
 import com.example.application.views.controllers.MainLayout;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.IntegerField;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
@@ -42,9 +36,10 @@ public class CartView extends HorizontalLayout implements BeforeEnterObserver, B
     private final SecurityService securityService;
     private final CartService cartService;
     private final SessionCartService sessionCartService;
+    private final OrderService orderService;
     private Map<CartItem, Integer> temporaryQuantities = new HashMap<>();
 
-    public CartView(ItemRepository itemRepository, CartItemRepository cartItemRepository, CartRepository cartRepository, UserRepository userRepository, SecurityService securityService, CartService cartService, SessionCartService sessionCartService) {
+    public CartView(ItemRepository itemRepository, CartItemRepository cartItemRepository, CartRepository cartRepository, UserRepository userRepository, SecurityService securityService, CartService cartService, SessionCartService sessionCartService, OrderService orderService) {
         this.itemRepository = itemRepository;
         this.cartItemRepository = cartItemRepository;
         this.cartRepository = cartRepository;
@@ -54,10 +49,12 @@ public class CartView extends HorizontalLayout implements BeforeEnterObserver, B
         this.sessionCartService = sessionCartService;
         setAlignItems(FlexComponent.Alignment.CENTER);
         setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        this.orderService = orderService;
     }
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        Button order = orderButton();
         Long userId = securityService.getAuthenticatedUserId();
         if(userId.equals(0L)){
             constructSessionUI();
@@ -66,6 +63,7 @@ public class CartView extends HorizontalLayout implements BeforeEnterObserver, B
             Cart cart = cartRepository.findByUserId(user.getId());
             constructUI(cart);
             }
+        add(order);
     }
 
 
@@ -83,54 +81,6 @@ public class CartView extends HorizontalLayout implements BeforeEnterObserver, B
         add(sessionItems);
     }
 
-    private void sessionCart(){
-        removeAll();
-        MultiSelectListBox<Integer> itemList = new MultiSelectListBox<>();
-        Map<Integer, Integer> itemsInCart = sessionCartService.getCart();
-
-        itemList.setItems(itemsInCart.keySet());
-
-        Dialog confirmDelete = new Dialog();
-        confirmDelete.setHeaderTitle("Na pewno chcesz usunac przedmiot z koszyka?");
-        confirmDelete.setModal(false);
-        Button confirmButton = new Button(new Icon(VaadinIcon.CHECK));
-        Button declineButton = new Button(new Icon(VaadinIcon.CLOSE));
-        confirmDelete.getFooter().add(confirmButton, declineButton);
-
-        itemList.setRenderer(new ComponentRenderer<>(key -> {
-            HorizontalLayout row = new HorizontalLayout();
-            Integer quantity = itemsInCart.get(key);
-
-            Item item = itemRepository.findById(Math.toIntExact(key));
-
-            Image productImage = new Image(item.getImageUrl(), "");
-            productImage.setWidth("50px");
-            productImage.setHeight("50px");
-
-            Span productName = new Span(item.getName());
-            Span productIndeks = new Span("Indeks: " + item.getId());
-
-            IntegerField cartitemquantity = new IntegerField();
-            cartitemquantity.setStepButtonsVisible(true);
-            cartitemquantity.setMin(0);
-            cartitemquantity.setMax(item.getQuantity());
-            cartitemquantity.setLabel("Ilość");
-            cartitemquantity.setHelperText("Maksymalnie " + item.getQuantity() + " produktów");
-            cartitemquantity.setValue(quantity);
-
-            productIndeks.getStyle().set("color", "var(--lumo-secondary-text-color)").set("font-size", "var(--lumo-font-size-s)");
-
-            VerticalLayout nameIndeks = new VerticalLayout(productName, productIndeks);
-            row.add(productImage, nameIndeks, cartitemquantity);
-            row.setAlignItems(FlexComponent.Alignment.CENTER);
-            return row;
-        }));
-
-        add(itemList);
-
-
-    }
-
     @Override
     public void beforeLeave(BeforeLeaveEvent beforeLeaveEvent) {
 
@@ -140,5 +90,15 @@ public class CartView extends HorizontalLayout implements BeforeEnterObserver, B
             cartItem.setQuantity(quantity);
             cartItemRepository.save(cartItem);
         });
+    }
+
+    private Button orderButton(){
+        Button orderButton = new Button("REALIZUJ ZAMOWIENIE");
+        orderButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY,
+                ButtonVariant.LUMO_SUCCESS);
+        orderButton.addClickListener(click -> {
+            UI.getCurrent().navigate("zamow");
+        });
+        return orderButton;
     }
 }
