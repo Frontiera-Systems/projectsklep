@@ -23,6 +23,7 @@ public class MainViewView extends VerticalLayout implements RouterLayout {
 
 
     public MainViewView() {
+
         setJustifyContentMode(JustifyContentMode.CENTER);
 
         Slide s1 = new Slide(createSlideContent("arduino-learning-kit","https://u.cubeupload.com/korylek/arduinokit.jpg"));
@@ -33,7 +34,7 @@ public class MainViewView extends VerticalLayout implements RouterLayout {
                 .withSlideDuration(4)
                 .withStartPosition(1)
                 .withoutSwipe();
-        c.setWidth("450px");
+        c.setWidth("550px");
         c.setHeight("300px");
         add(c);
     }
@@ -47,5 +48,6 @@ public class MainViewView extends VerticalLayout implements RouterLayout {
         });
         return result;
     }
+
 }
 

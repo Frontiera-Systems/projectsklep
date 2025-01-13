@@ -1,8 +1,9 @@
 package com.example.application.security;
 
 import com.example.application.service.ReCaptchaProperties;
-import com.example.application.views.controllers.MainLayout;
+import com.example.application.views.controllers.MainCustomLayout;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
@@ -14,14 +15,14 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@Route(value = "login", layout = MainLayout.class)
+import java.util.List;
+
+@Route(value = "login", layout = MainCustomLayout.class)
 @PageTitle("Login")
 @AnonymousAllowed
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
@@ -33,6 +34,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     private final String sitekey;
     private final String secretkey;
     private final LoginAttemptService loginAttemptService;
+    private String redirectTarget = "";
 
     public LoginView(ReCaptchaProperties properties, LoginAttemptService loginAttemptService) {
 
@@ -104,6 +106,8 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             removeAll();
             add(new H1("ZALOGUJ SIĘ"), login, registerLink);
         }
+
+
     }
 
     @Override
@@ -115,10 +119,20 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             login.setError(true);
         }
 
+        if(beforeEnterEvent.getLocation()
+                .getQueryParameters()
+                .getParameters()
+                .getOrDefault("redirect", List.of(""))
+                .getFirst().equals("zamow")){
+            Html orderLink = new Html("<a href='zamow' style='color: var(--lumo-primary-color); text-decoration: none;'>Kontynuuj jako gość</a>");
+            add(new Text("lub"),orderLink);
+        }
+
         if (getAuthenticatedUser()) {
             beforeEnterEvent.forwardTo("/"); // Przekierowanie na stronę główną
         }
     }
+
 
     public boolean getAuthenticatedUser() {
         SecurityContext context = SecurityContextHolder.getContext();
@@ -130,16 +144,11 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         return false;
     }
 
-    private String getRemoteAddr() {
-        VaadinRequest vaadinRequest = VaadinService.getCurrentRequest();
-        if (vaadinRequest != null) {
-            String forwardedFor = vaadinRequest.getHeader("X-Forwarded-For");
-            if (forwardedFor != null && !forwardedFor.isEmpty()) {
-                return forwardedFor.split(",")[0].trim();
-            }
-            return vaadinRequest.getRemoteAddr();
-        }
-        return "unknown";
-    }
 
+   /* @Override
+    public void setParameter(BeforeEvent beforeEvent, String parameter) {
+        if (parameter != null && !parameter.isEmpty()) {
+            redirectTarget = parameter;
+        }
+    }*/
 }

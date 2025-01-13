@@ -43,7 +43,7 @@ public class ItemsViewCard extends ListItem {
         selectCart.setLabel("Koszyk");
         cartDialog.add(selectCart);
 
-        setWidth("20%");
+        //setWidth("20%");
         addClassNames(LumoUtility.Background.CONTRAST_5, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START, LumoUtility.Padding.MEDIUM,
                 LumoUtility.BorderRadius.LARGE);
 
@@ -61,6 +61,8 @@ public class ItemsViewCard extends ListItem {
 
         Span header = new Span(nameLink);
         header.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.FontWeight.LIGHT);
+        header.getStyle().set("word-wrap", "break-word");
+        header.getStyle().set("white-space", "normal");
 
         Div headerContainer = new Div(header);
         headerContainer.setHeight("30%");

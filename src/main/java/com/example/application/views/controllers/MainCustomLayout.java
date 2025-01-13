@@ -3,14 +3,15 @@ package com.example.application.views.controllers;
 import com.example.application.model.Cart;
 import com.example.application.model.CartItem;
 import com.example.application.model.Category;
-import com.example.application.repository.*;
+import com.example.application.repository.CartItemRepository;
+import com.example.application.repository.CartRepository;
+import com.example.application.repository.CategoryRepository;
 import com.example.application.security.SecurityService;
 import com.example.application.service.CartService;
 import com.example.application.service.SearchService;
 import com.example.application.service.SessionCartService;
 import com.example.application.updateevents.CartUpdatedEvent;
 import com.vaadin.flow.component.*;
-import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.contextmenu.HasMenuItems;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
@@ -26,16 +27,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.RouterLayout;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@AnonymousAllowed
-public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterObserver {
+public class MainCustomLayout extends VerticalLayout implements RouterLayout, BeforeEnterObserver {
 
     private Nav breadcrumbNav;
     private OrderedList breadcrumbList;
@@ -45,20 +43,26 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final SessionCartService sessionCartService;
+    private final SearchService searchService;
     private Map<CartItem, Integer> temporaryQuantities = new HashMap<>();
     private MenuItem userAll;
     private SubMenu cartitems;
     private MultiSelectListBox<CartItem> itemList;
     MultiSelectListBox<Integer> sessionItems;
 
+    private VerticalLayout contentContainer; // Kontener na widok
+    private HorizontalLayout header;         // Nawigacja
+    private HorizontalLayout footer;         // Stopka
 
-    public MainLayout(@Autowired SecurityService securityService, @Autowired SearchService searchService, CategoryRepository categoryRepository, UserRepository userRepository, CartService cartService, ItemRepository itemRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, SessionCartService sessionCartService) {
+
+    public MainCustomLayout(SecurityService securityService, CategoryRepository categoryRepository, CartService cartService, CartRepository cartRepository, CartItemRepository cartItemRepository, SessionCartService sessionCartService, SearchService searchService) {
         this.securityService = securityService;
         this.categoryRepository = categoryRepository;
         this.cartService = cartService;
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
         this.sessionCartService = sessionCartService;
+        this.searchService = searchService;
 
         HorizontalLayout searchBarLayout = searchService.createSearchBar();
 
@@ -79,16 +83,11 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         cart = cartButton(userId);
 
         setClassName("custom-navbar");
+
         addNavbarContent(user, cart, searchBarLayout);
+addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER);
+
     }
-
-
-    @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        // Aktualizuj breadcrumb za każdym razem, gdy użytkownik odwiedza nową stronę
-        updateBreadcrumb(event.getLocation().getPath());
-    }
-
 
     private void addNavbarContent(Component userButton, Component cartButton, HorizontalLayout searchBarLayout) {
 
@@ -126,7 +125,6 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         navbar.add(logoImage, searchBarLayout, userInterfaceRoot);
 
-        // navbar.setFlexGrow(1,searchBarLayout);
         navbar.addClassNames(LumoUtility.Padding.Vertical.NONE);
 
         VerticalLayout menuBar = new VerticalLayout();
@@ -135,14 +133,53 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
         menuBar.setWidth("60%");
         menuBar.addClassNames(LumoUtility.Gap.XSMALL);
 
-        HorizontalLayout rootLayout = new HorizontalLayout(menuBar);
-        rootLayout.setWidthFull();
-       /* rootLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        rootLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);*/
-        rootLayout.addClassName("custom-horizontal-layout");
-        addToNavbar(rootLayout);
+        header = new HorizontalLayout(menuBar);
+
+        contentContainer = new VerticalLayout();
+        contentContainer.setWidthFull();
+        contentContainer.setAlignItems(Alignment.CENTER);
+        contentContainer.setPadding(false);
+        contentContainer.setSpacing(false);
+
+        //footer();
+
+        header.setWidthFull();
+        header.addClassName("custom-horizontal-layout");
+        add(header, contentContainer);
+        setFlexGrow(1, contentContainer);
     }
 
+    private void footer(){
+        footer = new HorizontalLayout();
+        footer.setWidthFull();
+        footer.addClassName("footer-horizontal-layout");
+        footer.setJustifyContentMode(JustifyContentMode.BETWEEN); // Rozdziela elementy na końce
+        footer.setAlignItems(Alignment.CENTER); // Wyrównuje elementy w pionie
+
+        VerticalLayout kontakt = new VerticalLayout();
+        VerticalLayout produkty = new VerticalLayout();
+        VerticalLayout informacje = new VerticalLayout();
+        VerticalLayout osklepie = new VerticalLayout();
+        VerticalLayout konto = new VerticalLayout();
+
+        kontakt.addClassName("footer-horizontal-layout a");
+        kontakt.add(new H3("KONTAKT"), new Span("+48 0700 2137 69"), new Span("Napisz do nas"), new Span("Adres"));
+        produkty.add(new H3("PRODUKTY"), new Span("Promocje"), new Span("Nowe produkty"), new Span("Najczesciej kupowane"));
+        informacje.add(new H3("INFORMACJE"), new Span("Reklamacje"), new Span("Regulamin"), new Span("Dostawcy"));
+        osklepie.add(new H3("O SKLEPIE"), new Span("O nas"), new Span("Opinie"), new Span("Newsletter"));
+        konto.add(new H3("KONTO"), new Span("Dane osobowe"), new Span("Adresy"), new Span("Zamowienia"));
+
+        // Dodanie elementów do stopki
+        footer.add(kontakt,produkty,informacje,osklepie,kontakt);
+    }
+
+    @Override
+    public void showRouterLayoutContent(HasElement content) {
+        contentContainer.getElement().removeAllChildren(); // Czyści istniejące widoki
+        if (content != null) {
+            contentContainer.getElement().appendChild(content.getElement());
+        }
+    }
 
     private void updateBreadcrumb(String path) {
         breadcrumbList.removeAll(); // Czyszczenie breadcrumb
@@ -279,7 +316,7 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
 
     private MenuBar cartButton(Long userId) {
         MenuBar mainMenu = new MenuBar();
-       // mainMenu.setOpenOnHover(true);
+        // mainMenu.setOpenOnHover(true);
         mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
 
 
@@ -331,5 +368,8 @@ public class MainLayout extends AppLayout implements RouterLayout, BeforeEnterOb
                 .ifPresent(text -> text.setText(newLabel)); // Zaktualizuj tekst
     }
 
-
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        updateBreadcrumb(beforeEnterEvent.getLocation().getPath());
+    }
 }

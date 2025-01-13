@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @EqualsAndHashCode(of = "id")
@@ -49,6 +51,13 @@ public class Item {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public String getFullPath()
     {

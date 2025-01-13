@@ -88,7 +88,7 @@ public class CartService {
         // Tworzenie instancji MultiSelectListBox
         MultiSelectListBox<CartItem> multiSelectListBox = new MultiSelectListBox<>();
         multiSelectListBox.setItems(itemsInCart);
-
+        multiSelectListBox.select(itemsInCart);
 
         // Tworzenie dialogu potwierdzającego usunięcie
         Dialog confirmDelete = new Dialog();
@@ -101,7 +101,7 @@ public class CartService {
         // Konfiguracja renderera
         multiSelectListBox.setRenderer(new ComponentRenderer<>(cartItem -> {
             HorizontalLayout row = new HorizontalLayout();
-
+            row.addClassName("cartitem-horizontal-layout");
             // Pobieranie danych o produkcie
             Item item = itemRepository.findById(Math.toIntExact(cartItem.getItem().getId()));
             multiSelectListBox.setItemEnabledProvider(status -> item.getQuantity() > 0);
@@ -168,8 +168,9 @@ public class CartService {
 
         // Tworzenie instancji MultiSelectListBox
         MultiSelectListBox<Integer> multiSelectListBox = new MultiSelectListBox<>();
+        multiSelectListBox.addClassName("cartitem-multiselect");
         multiSelectListBox.setItems(sessionCart.keySet());
-
+        multiSelectListBox.select(sessionCart.keySet());
         // Tworzenie dialogu potwierdzającego usunięcie
         Dialog confirmDelete = new Dialog();
         confirmDelete.setHeaderTitle("Na pewno chcesz usunąć przedmiot z koszyka?");
@@ -181,7 +182,7 @@ public class CartService {
         // Konfiguracja renderera
         multiSelectListBox.setRenderer(new ComponentRenderer<>(itemId -> {
             HorizontalLayout row = new HorizontalLayout();
-
+            row.addClassName("cartitem-horizontal-layout");
             // Pobieranie danych o produkcie
             Optional<Item> optionalItem = sessionCartService.itemRepository.findById(itemId);
 
@@ -193,8 +194,7 @@ public class CartService {
 
             // Obrazek produktu
             Image productImage = new Image(item.getImageUrl(), "");
-            productImage.setWidth("10%");
-            productImage.setHeight("10%");
+            productImage.addClassName("cartitem-image");
 
             // Dane produktu
             Span productName = new Span(item.getName());
@@ -210,7 +210,7 @@ public class CartService {
             cartItemQuantity.setLabel("Ilość");
             cartItemQuantity.setHelperText("/" + item.getQuantity());
             cartItemQuantity.setValue(sessionCart.get(itemId));
-            cartItemQuantity.setWidth("5%");
+            cartItemQuantity.addClassName("cartitem-quantity");
 
             // Obsługa zmiany ilości
             cartItemQuantity.addValueChangeListener(value -> {

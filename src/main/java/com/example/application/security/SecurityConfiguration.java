@@ -33,7 +33,6 @@ public class SecurityConfiguration extends VaadinWebSecurity {
         http
 
                 .formLogin(form -> form.loginPage("/login")
-                        .defaultSuccessUrl("/",true)
                         .failureHandler(new CustomAuthenticationFailureHandler(loginAttemptService))
                         .successHandler(new CustomAuthenticationSuccessHandler(loginAttemptService))
                         .loginProcessingUrl("/login")

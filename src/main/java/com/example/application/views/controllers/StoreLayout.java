@@ -1,7 +1,12 @@
 package com.example.application.views.controllers;
 
 import com.example.application.model.Category;
+import com.example.application.model.Item;
 import com.example.application.repository.CategoryRepository;
+import com.example.application.repository.ItemRepository;
+import com.example.application.views.pages.items.ItemsViewCard;
+import com.flowingcode.vaadin.addons.carousel.Carousel;
+import com.flowingcode.vaadin.addons.carousel.Slide;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.details.DetailsVariant;
 import com.vaadin.flow.component.html.Anchor;
@@ -12,30 +17,34 @@ import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AnonymousAllowed
-@ParentLayout(MainLayout.class)
+@ParentLayout(MainCustomLayout.class)
 public class StoreLayout extends HorizontalLayout implements RouterLayout {
 
     private final CategoryRepository categoryRepository;
+    private final ItemRepository itemRepository;
+    private List<Item> items;
+    private VerticalLayout leftMenus;
 
-    public StoreLayout(CategoryRepository categoryRepository) {
+    public StoreLayout(CategoryRepository categoryRepository, ItemRepository itemRepository) {
 
         this.categoryRepository = categoryRepository;
+        this.itemRepository = itemRepository;
+        items = itemRepository.findTop5ByOrderByCreatedAtDesc();
+        leftMenus = new VerticalLayout();
+        leftMenus.addClassName("left-vertical-layout");
         addClassNames(LumoUtility.MaxWidth.SCREEN_XLARGE, LumoUtility.Margin.Horizontal.AUTO, LumoUtility.Padding.Bottom.LARGE, LumoUtility.Padding.Horizontal.LARGE);
-        VerticalLayout mainContent = new VerticalLayout();
-        mainContent.setWidth("80%");  // Ustawiamy szerokość na 80%
-        mainContent.setHeightFull();  // Ustawiamy pełną wysokość, by wypełniał dostępne miejsce
         AccordionMenu();
+        newItems();
 
+        add(leftMenus);
     }
 
     public void AccordionMenu() {
         VerticalLayout accordionMenu = new VerticalLayout();
-        /*accordionMenu.addClassNames(LumoUtility.Gap.XSMALL);
-        accordionMenu.setPadding(false);*/
-        accordionMenu.setWidth("20%");
         accordionMenu.setClassName("left-cat-menu");
 
         // Pobierz wszystkie kategorie bez rodzica
@@ -65,7 +74,7 @@ public class StoreLayout extends HorizontalLayout implements RouterLayout {
             }
         });
 
-        add(accordionMenu);
+        leftMenus.add(accordionMenu);
     }
 
     // Rekurencyjna metoda do tworzenia menu z subkategoriami
@@ -95,5 +104,24 @@ public class StoreLayout extends HorizontalLayout implements RouterLayout {
                 parentLayout.add(subcategoryDetails); // Dodaj subkategorię do głównego layoutu
             }
         });
+    }
+
+    private void newItems(){
+        List<Slide> slides = new ArrayList<>();
+        items.forEach(item -> {
+            slides.add(new Slide(new ItemsViewCard(item)));
+        });
+
+        slides.forEach(slide -> {
+            slide.addClassName("carousel-item-left");
+        });
+
+        Carousel newitemscarousel = new Carousel(slides.toArray(new Slide[0])).withAutoProgress().withSlideDuration(4)
+                .withStartPosition(1)
+                .withoutSwipe()
+                .withoutNavigation();
+        newitemscarousel.setWidthFull();
+        newitemscarousel.setHeightFull();;
+        leftMenus.add(newitemscarousel);
     }
 }

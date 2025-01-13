@@ -21,8 +21,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         // Reset liczby prób
+        String redirectUrl = request.getParameter("redirect");
         loginAttemptService.loginSucceeded();
-
-        response.sendRedirect("");
+        if (redirectUrl != null && !redirectUrl.isEmpty()) {
+            // Przekieruj użytkownika do docelowego widoku
+            response.sendRedirect(redirectUrl);
+        } else {
+            // Domyślne przekierowanie (np. na stronę główną)
+            response.sendRedirect("/");
+        }
     }
 }

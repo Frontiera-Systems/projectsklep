@@ -14,5 +14,5 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     Item findById(int id);
     long countByNameContainingIgnoreCase(String name);
     List<Item> findByCategoryId(Long id);
-
+    List<Item> findTop5ByOrderByCreatedAtDesc();
 }

@@ -84,15 +84,40 @@ login-form::part(form-title) {
       justify-content: center;
 }
 
+
+.footer-horizontal-layout {
+      background-color: #70798c; /* Ciemne tło */
+      color: white; /* Tekst biały */
+      padding: 10px 20px; /* Odstępy */
+      font-size: 0.9rem; /* Rozmiar tekstu */
+}
+
+.footer-vertical-layout a{
+      align-items: center; /* Wyrównanie elementów w pionie */
+      justify-content: center;
+      color: #777373;
+}
+
+.cart-vertical-layout{
+      align-items: center; /* Wyrównanie elementów w pionie */
+      justify-content: center;
+}
+
+.left-vertical-layout{
+      align-items: start; /* Wyrównanie elementów w pionie */
+      justify-content: start;
+      width: 25% !important;
+      overflow: hidden;
+      white-space: nowrap;
+}
+
 .left-cat-menu {
       row-gap: 0;
       align-items: start;
       border-radius: 8px;
-      justify-content: center;
+      justify-content: start;
       border: 0.5px solid rgba(211, 209, 209, 0.58);
       padding: 0px;
-      width: 10%;
-      height: 100%;
       min-width: 10%;
 }
 
@@ -112,6 +137,15 @@ login-form::part(form-title) {
       /* Opcjonalny kolor tła */ /* Odstęp od lewego marginesu dla całego komponentu */
 }
 
+.carousel-item-left {
+      width: 100% !important;
+      height: 100%;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-position: 50% 50%; /* Można też użyć "center" */
+      border-radius: 8px;
+}
+
 .carousel-item {
       width: 100%;
       height: 100%;
@@ -122,11 +156,45 @@ login-form::part(form-title) {
 }
 
 .order-vertical-layout{
-      background-color: #ffffff; /* Opcjonalny kolor tła */
-      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1); /* Dodaje cień */
       padding: 0px; /* Opcjonalny padding wewnętrzny */
       row-gap: 0px;
       border-radius: 8px; /* Opcjonalne zaokrąglenie rogów */
       align-items: center; /* Wyrównanie elementów w pionie */
       justify-content: center;
+}
+
+.custom-item-style {
+      width: 20%;
+}
+
+.cartitem-horizontal-layout {
+      font-size: 0.9rem; /* Rozmiar tekstu */
+      width: 100%;
+      height: 100%;
+      align-items: center; /* Wyrównanie elementów w pionie */
+      justify-content: space-between;
+      display: flex;
+      border: 1px solid rgba(211, 209, 209, 0.58);
+      border-radius: 8px;
+}
+
+.cartitem-multiselect {
+      width: auto; /* Automatyczna szerokość zależna od zawartości */
+      max-width: 80%; /* Opcjonalnie ograniczenie maksymalnej szerokości */
+      height: auto; /* Automatyczna wysokość zależna od liczby elementów */
+      max-height: 300px; /* Opcjonalnie ograniczenie maksymalnej wysokości */
+      overflow: auto; /* Dodanie przewijania, jeśli zawartość jest większa */
+      display: block;
+}
+
+.cartitem-quantity {
+      flex: 0 0 25px; /* Stała szerokość pola ilości */
+      width: 10%;
+}
+
+.cartitem-image {
+      flex: 0 0 50px; /* Stała szerokość obrazka */
+      height: 100px; /* Stała wysokość obrazka */
+      object-fit: cover; /* Dopasowanie obrazka do rozmiaru */
+      border-radius: 8px;
 }

@@ -168,8 +168,15 @@ public class ItemView extends Main implements HasComponents, HasStyle {
         int end = Math.min(start + ITEMS_PER_PAGE, items.size());
 
         List<Item> pageItems = items.subList(start, end);
-        // Dodaj elementy na aktualną stronę
-        pageItems.forEach(item -> itemsContainer.add(new ItemsViewCard(item)));
+       /* // Dodaj elementy na aktualną stronę
+        pageItems.forEach(item -> itemsContainer.add(new ItemsViewCard(item)));*/
+
+        pageItems.forEach(item -> {
+            ItemsViewCard card = new ItemsViewCard(item);
+            card.addClassName("custom-item-style");  // Dodanie klasy CSS
+            itemsContainer.add(card);
+        });
+
     }
 
 
