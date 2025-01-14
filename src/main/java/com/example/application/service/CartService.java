@@ -246,6 +246,4 @@ public class CartService {
         return multiSelectListBox;
     }
 
-
-
 }

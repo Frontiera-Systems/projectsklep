@@ -101,6 +101,7 @@ login-form::part(form-title) {
 .cart-vertical-layout{
       align-items: center; /* Wyrównanie elementów w pionie */
       justify-content: center;
+      width: 20%;
 }
 
 .left-vertical-layout{
@@ -198,3 +199,26 @@ login-form::part(form-title) {
       object-fit: cover; /* Dopasowanie obrazka do rozmiaru */
       border-radius: 8px;
 }
+
+.cart-grid {
+      width: auto;
+      display: inline-block; /* Dostosowanie szerokości gridu do zawartości */
+      max-width: 100%;
+      box-sizing: border-box;/* Opcjonalnie, aby nie wyjść poza rodzica */
+      align-items: center; /* Wyrównanie elementów w pionie */
+      justify-content: space-between;
+      text-align: center;
+}
+
+.cart-grid::part(header) {
+      font-weight: bold;
+      white-space: unset;
+      padding: 0;
+      gap: 0;
+}
+
+.my-grid-container {
+      width: fit-content; /* Dopasowuje szerokość do zawartości */
+      margin: auto; /* Centruje element */
+}
+
