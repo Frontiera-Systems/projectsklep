@@ -105,7 +105,7 @@ public class CartView extends VerticalLayout implements BeforeEnterObserver, Bef
 
         cartGrid.setAllRowsVisible(true);
         cartGrid.addClassName("cart-grid");
-        cartGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+        //cartGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 
         cartGrid.addColumn(createCartItemRenderer())
                 .setHeader("Produkt").setAutoWidth(true).setFlexGrow(1).setHeaderPartName("header");
@@ -113,7 +113,7 @@ public class CartView extends VerticalLayout implements BeforeEnterObserver, Bef
         cartGrid.addComponentColumn(cartItem -> {
             IntegerField quantityfield = new IntegerField();
             quantityfield.setMax(cartItem.getItem().getQuantity());
-            quantityfield.setMin(0);
+            quantityfield.setMin(1);
             quantityfield.setValue(cartItem.getQuantity());
             quantityfield.addValueChangeListener(value -> {
                 cartItem.setQuantity(value.getValue());
@@ -180,7 +180,7 @@ public class CartView extends VerticalLayout implements BeforeEnterObserver, Bef
 
         cartGrid.setAllRowsVisible(true);
         cartGrid.addClassName("cart-grid");
-        cartGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+     //   cartGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 
         cartGrid.addColumn(createCartItemSessionRenderer(sessionCartService))
                 .setHeader("Produkt").setAutoWidth(true).setFlexGrow(1).setHeaderPartName("header");
@@ -189,7 +189,7 @@ public class CartView extends VerticalLayout implements BeforeEnterObserver, Bef
             Optional<Item> optionalItem = sessionCartService.itemRepository.findById(cartItem);
             IntegerField quantityfield = new IntegerField();
             quantityfield.setMax(optionalItem.get().getQuantity());
-            quantityfield.setMin(0);
+            quantityfield.setMin(1);
             quantityfield.setValue(sessionCart.get(cartItem));
             quantityfield.addValueChangeListener(value -> {
                 Integer newQuantity = value.getValue();

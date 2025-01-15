@@ -3,6 +3,7 @@ package com.example.application.views.controllers;
 import com.example.application.model.Cart;
 import com.example.application.model.CartItem;
 import com.example.application.model.Category;
+import com.example.application.model.Item;
 import com.example.application.repository.CartItemRepository;
 import com.example.application.repository.CartRepository;
 import com.example.application.repository.CategoryRepository;
@@ -15,6 +16,8 @@ import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.contextmenu.HasMenuItems;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -24,6 +27,8 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.renderer.LitRenderer;
+import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.RouterLayout;
@@ -32,6 +37,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class MainCustomLayout extends VerticalLayout implements RouterLayout, BeforeEnterObserver {
 
@@ -49,6 +55,7 @@ public class MainCustomLayout extends VerticalLayout implements RouterLayout, Be
     private SubMenu cartitems;
     private MultiSelectListBox<CartItem> itemList;
     MultiSelectListBox<Integer> sessionItems;
+    Div gridContainer = new Div();
 
     private VerticalLayout contentContainer; // Kontener na widok
     private HorizontalLayout header;         // Nawigacja
@@ -316,24 +323,58 @@ addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER);
 
     private MenuBar cartButton(Long userId) {
         MenuBar mainMenu = new MenuBar();
+        mainMenu.addClassName("unique-menubar");
         // mainMenu.setOpenOnHover(true);
         mainMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
 
 
         if (userId != 0L) {
+            removeAll();
             Cart cart = cartRepository.findByUserId(userId);
             List<CartItem> itemsInCart = cartItemRepository.findByCartId(cart.getId());
+
+            Grid<CartItem> cartButtonGrid = new Grid<>(CartItem.class, false);
+            cartButtonGrid.addClassName("cart-grid");
+            cartButtonGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER,GridVariant.LUMO_NO_ROW_BORDERS,GridVariant.LUMO_COMPACT);
+            cartButtonGrid.setAllRowsVisible(true);
+            cartButtonGrid.addColumn(createCartItemRenderer())
+                    .setAutoWidth(true).setFlexGrow(1).setHeader("Produkty").setHeaderPartName("header");
+
+            cartButtonGrid.setItems(itemsInCart);
+
+            gridContainer.addClassName("my-grid-container");
+            gridContainer.add(cartButtonGrid);
+
+
+
             itemList = cartService.multiitembox(itemsInCart, temporaryQuantities, cart);
             userAll = createIconItem(mainMenu, VaadinIcon.CART, "KOSZYK ( " + itemsInCart.size() + " )", null);
+            userAll.setCheckable(false);
             cartitems = userAll.getSubMenu();
-            cartitems.addItem(itemList).addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
+
+            cartitems.addItem(gridContainer).addClassNames(LumoUtility.Gap.XSMALL,LumoUtility.Margin.NONE,LumoUtility.Background.TRANSPARENT,LumoUtility.Padding.NONE);
 
         } else {
+            removeAll();
             Map<Integer, Integer> cart = sessionCartService.getCart();
-            sessionItems = cartService.multiitemboxForSessionCart(sessionCartService, cart);
+
+            Grid<Integer> cartGrid = new Grid<>();
+
+            cartGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER,GridVariant.LUMO_NO_ROW_BORDERS,GridVariant.LUMO_COMPACT);
+            cartGrid.setAllRowsVisible(true);
+            cartGrid.addClassName("cart-grid");
+            cartGrid.addColumn(createCartItemSessionRenderer(sessionCartService))
+                    .setAutoWidth(true).setFlexGrow(1).setHeader("Produkty").setHeaderPartName("header");
+
+            cartGrid.setItems(cart.keySet());
+
+            gridContainer.addClassName("my-grid-container");
+            gridContainer.add(cartGrid);
+            //sessionItems = cartService.multiitemboxForSessionCart(sessionCartService, cart);
             userAll = createIconItem(mainMenu, VaadinIcon.CART, "KOSZYK ( " + cart.size() + " )", null);
+            userAll.setCheckable(false);
             cartitems = userAll.getSubMenu();
-            cartitems.addItem(sessionItems).addClassName(LumoUtility.MaxWidth.SCREEN_SMALL);
+            cartitems.addItem(gridContainer).addClassNames(LumoUtility.Gap.XSMALL,LumoUtility.Margin.NONE,LumoUtility.Background.TRANSPARENT,LumoUtility.Padding.NONE);
 
         }
 
@@ -343,20 +384,79 @@ addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER);
         return mainMenu;
     }
 
+    private static Renderer<Integer> createCartItemSessionRenderer(SessionCartService sessionCartService) {
+        return LitRenderer.<Integer>of(
+                        "<vaadin-horizontal-layout style=\"align-items: center;\" theme=\"spacing\">"
+                                + "  <img src=\"${item.pictureUrl}\" alt=\"Item image\" style=\"width: 50px; height: 50px; border-radius: 50%; margin-right: var(--lumo-space-m);\">"
+                                + "  <vaadin-vertical-layout style=\"line-height: var(--lumo-line-height-m);\">"
+                                + "    <span style=\"white-space: nowrap; overflow: hidden; text-overflow: ellipsis;\">"
+                                + "      ${item.fullName}"
+                                + "    </span>"
+                                + "    <span style=\"font-size: var(--lumo-font-size-s); color: var(--lumo-secondary-text-color);\">"
+                                + "      ${item.id}"
+                                + "    </span>"
+                                + "  </vaadin-vertical-layout>"
+                                + "    <span style=\"white-space: nowrap; overflow: hidden; text-overflow: ellipsis;\">"
+                                + "      ${item.price}"
+                                + "    </span>"
+                                + "</vaadin-horizontal-layout>"
+                )
+                .withProperty("pictureUrl", cartItem -> {
+                    Optional<Item> optionalItem = sessionCartService.itemRepository.findById(cartItem);
+                    return optionalItem.get().getImageUrl();
+                }) // URL do obrazu
+                .withProperty("fullName", cartItem -> {
+                    Optional<Item> optionalItem = sessionCartService.itemRepository.findById(cartItem);
+                    return optionalItem.get().getName();
+                })      // Nazwa przedmiotu
+                .withProperty("id", cartItem -> {
+                    Optional<Item> optionalItem = sessionCartService.itemRepository.findById(cartItem);
+                    return "Indeks: " + optionalItem.get().getId();
+                }) // Indeks z dodanym napisem
+                .withProperty("price", cartItem -> {
+                    Optional<Item> optionalItem = sessionCartService.itemRepository.findById(cartItem);
+                    Map<Integer, Integer> cart = sessionCartService.getCart();
+                    return optionalItem.get().getPrice() * cart.get(cartItem);
+                });
+    }
+
+    private static Renderer<CartItem> createCartItemRenderer() {
+        return LitRenderer.<CartItem>of(
+                        "<vaadin-horizontal-layout style=\"align-items: center;\" theme=\"spacing\">"
+                                + "  <img src=\"${item.pictureUrl}\" alt=\"Item image\" style=\"width: 50px; height: 50px; border-radius: 50%; margin-right: var(--lumo-space-m);\">"
+                                + "  <vaadin-vertical-layout style=\"line-height: var(--lumo-line-height-m);\">"
+                                + "    <span style=\"white-space: nowrap; overflow: hidden; text-overflow: ellipsis;\">"
+                                + "      ${item.fullName}"
+                                + "    </span>"
+                                + "    <span style=\"font-size: var(--lumo-font-size-s); color: var(--lumo-secondary-text-color);\">"
+                                + "      ${item.id}"
+                                + "    </span>"
+                                + "  </vaadin-vertical-layout>"
+                                + "    <span style=\"white-space: nowrap; overflow: hidden; text-overflow: ellipsis;\">"
+                                + "      ${item.price}"
+                                + "    </span>"
+                                + "</vaadin-horizontal-layout>"
+                )
+                .withProperty("pictureUrl", cartItem -> cartItem.getItem().getImageUrl()) // URL do obrazu
+                .withProperty("fullName", cartItem -> cartItem.getItem().getName())      // Nazwa przedmiotu
+                .withProperty("id", cartItem -> "Indeks: " + cartItem.getItem().getId())
+                .withProperty("price", cartItem -> cartItem.getQuantity() * cartItem.getItem().getPrice()); // Indeks z dodanym napisem
+    }
+
     public void updateCartIcon(Long userId) {
         if (userId != 0L) {
             Cart cart = cartRepository.findByUserId(userId);
             List<CartItem> itemsInCart = cartItemRepository.findByCartId(cart.getId());
             updateTextInMenuItem(userAll,"KOSZYK ( " + itemsInCart.size() + " )");
             cartitems.removeAll();
-            cartitems.addItem(itemList).addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
+            cartitems.addItem(gridContainer).addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
 
         } else {
             Map<Integer, Integer> cart = sessionCartService.getCart();
             updateTextInMenuItem(userAll,"KOSZYK ( " + cart.size() + " )");
             MultiSelectListBox<Integer> sessionItems = cartService.multiitemboxForSessionCart(sessionCartService, cart);
             cartitems.removeAll();
-            cartitems.addItem(sessionItems).addClassName(LumoUtility.MaxWidth.SCREEN_SMALL);
+            cartitems.addItem(gridContainer).addClassName(LumoUtility.MaxWidth.SCREEN_SMALL);
         }
     }
 

@@ -222,3 +222,24 @@ login-form::part(form-title) {
       margin: auto; /* Centruje element */
 }
 
+/* Styl dla itemów w SubMenu */
+.unique-menubar::part(overlay) {
+      padding: 0; /* Usuń padding z całego SubMenu */
+      margin: 0; /* Usuń marginesy */
+}
+
+.unique-menubar::part(items) {
+      padding: 0; /* Usuń padding z elementów menu */
+      margin: 0; /* Usuń marginesy */
+      user-select: none; /* Wyłącz zaznaczanie tekstu */
+}
+
+.unique-menubar::part(menu-item):hover,
+.unique-menubar::part(menu-item):focus,
+.unique-menubar::part(menu-item)::selection {
+      color: transparent; /* Usuń wskaźnik zaznaczenia lub hover */
+}
+
+.unique-menubar[menu-item-checked]::part(checkmark){
+      color: transparent;
+}
