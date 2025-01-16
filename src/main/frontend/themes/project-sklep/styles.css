@@ -242,4 +242,23 @@ login-form::part(form-title) {
 
 .unique-menubar[menu-item-checked]::part(checkmark){
       color: transparent;
+      width: 0;
+      display: none;
+}
+
+.unique-menubar::part(checkmark)::before {
+      display: none;
+}
+
+.unique-menubar {
+      padding-left: var(--lumo-space-xs);
+}
+
+vaadin-menu-bar-item::part(checkmark)::before {
+      display: none;
+}
+
+/* some indent for the content */
+vaadin-menu-bar-item {
+      padding-left: var(--lumo-space-s);
 }

@@ -24,8 +24,8 @@ public class MainViewView extends VerticalLayout implements RouterLayout {
 
     public MainViewView() {
 
-        setJustifyContentMode(JustifyContentMode.CENTER);
-
+        setJustifyContentMode(JustifyContentMode.START);
+        setAlignItems(Alignment.CENTER);
         Slide s1 = new Slide(createSlideContent("arduino-learning-kit","https://u.cubeupload.com/korylek/arduinokit.jpg"));
         Slide s2 = new Slide(createSlideContent("ender3-v3","https://u.cubeupload.com/korylek/ender3v3.jpg"));
         Slide s3 = new Slide(createSlideContent("flipper-zero","https://u.cubeupload.com/korylek/fiipperzero30.jpg"));

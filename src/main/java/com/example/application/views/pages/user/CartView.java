@@ -83,16 +83,6 @@ public class CartView extends VerticalLayout implements BeforeEnterObserver, Bef
 
 
     private void constructUI(Cart cart) {
-        /*removeAll();
-        List<CartItem> itemsInCart = cartItemRepository.findByCartId(cart.getId());
-        itemList = cartService.multiitembox(itemsInCart, temporaryQuantities, cart);
-        if(itemsInCart.isEmpty()){
-            thecartEmpty();
-        } else {
-            Button order = orderButton();
-            listDiv.add(itemList, order);
-        }*/
-
         removeAll();
 
 
@@ -105,7 +95,6 @@ public class CartView extends VerticalLayout implements BeforeEnterObserver, Bef
 
         cartGrid.setAllRowsVisible(true);
         cartGrid.addClassName("cart-grid");
-        //cartGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 
         cartGrid.addColumn(createCartItemRenderer())
                 .setHeader("Produkt").setAutoWidth(true).setFlexGrow(1).setHeaderPartName("header");
@@ -126,7 +115,7 @@ public class CartView extends VerticalLayout implements BeforeEnterObserver, Bef
         }).setHeader("Ilosc").setHeaderPartName("header");;
 
         cartGrid.addColumn(cartItem -> cartItem.getItem().getPrice()*cartItem.getQuantity() + " zł")
-                .setHeader("Razem").setAutoWidth(true).setFlexGrow(1).setHeaderPartName("header");;
+                .setHeader("Razem").setAutoWidth(true).setFlexGrow(1).setHeaderPartName("header");
 
         cartGrid.addComponentColumn(cartItem -> {
             Button removeButton = new Button(new Icon(VaadinIcon.TRASH), click -> {
@@ -180,7 +169,6 @@ public class CartView extends VerticalLayout implements BeforeEnterObserver, Bef
 
         cartGrid.setAllRowsVisible(true);
         cartGrid.addClassName("cart-grid");
-     //   cartGrid.setSelectionMode(Grid.SelectionMode.MULTI);
 
         cartGrid.addColumn(createCartItemSessionRenderer(sessionCartService))
                 .setHeader("Produkt").setAutoWidth(true).setFlexGrow(1).setHeaderPartName("header");
@@ -278,19 +266,12 @@ public class CartView extends VerticalLayout implements BeforeEnterObserver, Bef
                 ButtonVariant.LUMO_SUCCESS);
         orderButton.addClickListener(click -> {
             if(userId.equals(0L)){
-                Set<Integer> selectedItems = sessionItems.getSelectedItems();
-                UI.getCurrent().getSession().setAttribute("selectedItems",selectedItems);
-                UI.getCurrent().getPage().setLocation("/login?redirect=zamow");;
+                UI.getCurrent().getPage().setLocation("/login?redirect=zamow");
             } else {
-                Set<CartItem> selectedItems = itemList.getSelectedItems();
-                UI.getCurrent().getSession().setAttribute("selectedItems", selectedItems);
                 UI.getCurrent().navigate("zamow");
             }
         });
         return orderButton;
     }
 
-    private void ui(){
-
-    }
 }
