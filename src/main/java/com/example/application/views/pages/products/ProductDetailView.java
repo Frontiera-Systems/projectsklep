@@ -1,4 +1,4 @@
-package com.example.application.views.pages;
+package com.example.application.views.pages.products;
 
 import com.example.application.model.Item;
 import com.example.application.repository.ItemRepository;

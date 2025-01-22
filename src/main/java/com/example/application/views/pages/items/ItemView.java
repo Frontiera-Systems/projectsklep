@@ -51,8 +51,6 @@ public class ItemView extends Main implements HasComponents, HasStyle {
         HorizontalLayout buttonContainer = new HorizontalLayout();
         container.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.END);
 
-        itemsContainer.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.NONE, LumoUtility.Padding.NONE, LumoUtility.JustifyContent.CENTER);
-
         Select<String> sortBy = new Select<>();
         sortBy.setLabel("Sortuj " + items.size());
         sortBy.setItems("Nazwa A-Z", "Nazwa Z-A", "Cena rosnąco", "Cena malejąco");
@@ -104,39 +102,6 @@ public class ItemView extends Main implements HasComponents, HasStyle {
             ComponentUtil.fireEvent(UI.getCurrent(), new ItemViewUpdatedEvent(this,currentPage > 0,0));
         });
 
-   /*     prevButton = new Button("Poprzednia",
-                new Icon(VaadinIcon.ARROW_LEFT), event -> {
-            nextButton.setEnabled(true);
-            if (currentPage > 1) {
-                currentPage--;
-                updateItems();
-                prevButton.setEnabled(true);
-            }
-
-        });
-
-        prevButton.setDisableOnClick(true);
-        prevButton.setEnabled(false);
-
-        nextButton = new Button("Następna",
-                new Icon(VaadinIcon.ARROW_RIGHT),
-                 event -> {
-                prevButton.setEnabled(true);
-                nextButton.setEnabled(false);
-            if (currentPage < getTotalPages()) {
-                currentPage++;
-                updateItems();
-                nextButton.setEnabled(true);
-            }
-
-            currentPageButton.setText("Strona " + currentPage + " z " + getTotalPages());
-
-        });
-
-        nextButton.setIconAfterText(true);
-        nextButton.setDisableOnClick(true);*/
-
-
         buttonContainer.add(prevButton, currentPageButton, nextButton);
         container.add(sortBy,buttonContainer);
         setWidthFull();
@@ -168,8 +133,6 @@ public class ItemView extends Main implements HasComponents, HasStyle {
         int end = Math.min(start + ITEMS_PER_PAGE, items.size());
 
         List<Item> pageItems = items.subList(start, end);
-       /* // Dodaj elementy na aktualną stronę
-        pageItems.forEach(item -> itemsContainer.add(new ItemsViewCard(item)));*/
 
         pageItems.forEach(item -> {
             ItemsViewCard card = new ItemsViewCard(item);

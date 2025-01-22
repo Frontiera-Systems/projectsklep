@@ -71,6 +71,26 @@ public class CartService {
         cartRepository.save(cart);
     }
 
+    public double calculateTotalCartValue(Long userId) {
+        // Znalezienie koszyka użytkownika
+        Cart cart = cartRepository.findByUserId(userId);
+
+        // Inicjalizacja sumy
+        double totalValue = 0.0;
+
+        // Iteracja przez wszystkie przedmioty w koszyku
+        for (CartItem cartItem : cart.getItems()) {
+            Item item = cartItem.getItem();  // Pobranie przedmiotu
+            int quantity = cartItem.getQuantity();  // Ilość
+            double itemPrice = item.getPrice();  // Cena jednostkowa
+
+            // Dodaj cenę przedmiotu pomnożoną przez ilość do sumy
+            totalValue += itemPrice * quantity;
+        }
+
+        return totalValue;
+    }
+
     public List<CartItem> getItemsInCart(Long cartId) {
         return cartItemRepository.findByCartId(cartId);
     }

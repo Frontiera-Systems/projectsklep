@@ -25,8 +25,17 @@ public class Order {
     private List<OrderDetails> orderDetails;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    private String imie;
+    private String nazwisko;
+    private String adres;
+    private String kodpocztowy;
+    private String Miasto;
+    private String telefon;
+    private String kurier;
+    private Long numerprzewozowy;
 
     public Double calculateTotalPrice() {
         return orderDetails.stream()

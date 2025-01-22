@@ -46,4 +46,29 @@ public class SessionCartService {
         }
         return koszyk;
     }
+
+    public double getTotalCartPrice() {
+        Map<Integer, Integer> koszyk = getCart();
+
+        return koszyk.entrySet().stream()
+                .mapToDouble(entry -> {
+                    int itemId = entry.getKey();
+                    int quantity = entry.getValue();
+
+                    // Pobierz przedmiot z repozytorium
+                    Item item = itemRepository.findById(itemId);
+
+                    // Jeśli przedmiot istnieje, przemnoż cenę przez ilość
+                    if (item != null) {
+                        return item.getPrice() * quantity;
+                    }
+
+                    // Jeśli przedmiotu nie ma, zwróć 0
+                    return 0.0;
+                })
+                .sum(); // Suma wszystkich cen
+    }
+
+
+
 }

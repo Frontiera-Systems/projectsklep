@@ -161,7 +161,8 @@ login-form::part(form-title) {
       row-gap: 0px;
       border-radius: 8px; /* Opcjonalne zaokrąglenie rogów */
       align-items: center; /* Wyrównanie elementów w pionie */
-      justify-content: center;
+      justify-content: start;
+      width: 20%;
 }
 
 .custom-item-style {
